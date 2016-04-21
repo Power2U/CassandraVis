@@ -20,6 +20,7 @@
 
 	<!-- SPELLS -->
 	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
+	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 	<script src="core.js"></script>
 
 </head>
@@ -68,7 +69,12 @@
 			<p>Read the <a href="http://scotch.io/tutorials/javascript/creating-a-single-page-todo-app-with-node-and-angular">tutorial</a>.</p>
 		</div>
 		-->
+		<div ng-controller="SalesController">
+		  <h1>Today's Temp Chart</h1>
+		  <div linear-chart chart-data="salesData"></div>
+		</div>
 	</div>
 
 </body>
 </html>
+
