@@ -38,7 +38,8 @@ function mainController($scope, $http) {
 
 }
 
-cassandraVis.controller('TemperatureController', ['$scope','$interval', function($scope, $interval){
+cassandraVis.controller('TemperatureController', ['$scope','$interval', '$http', function($scope, $interval, $http){
+
     $scope.temperatureData=[
         {hour: 1,temperature: 54},
         {hour: 2,temperature: 66},
@@ -51,11 +52,21 @@ cassandraVis.controller('TemperatureController', ['$scope','$interval', function
         {hour: 9,temperature: 55},
         {hour: 10,temperature: 30}
     ];
-
+    var counter = 0;
     $interval(function(){
         var hour=$scope.temperatureData.length+1;
         var temperature= Math.round(Math.random() * 100);
-        $scope.temperatureData.push({hour: hour, temperature:temperature});
+        //$scope.temperatureData.push({hour: hour, temperature:temperature});
+	counter++;
+	if (counter > 99) counter = 0;
+	$http.get('/api/temperatures')
+		.success(function(data) {
+			console.log(data[counter]);
+			$scope.temperatureData.push({hour:data[counter].hour, temperature:data[counter].value});
+		})
+		.error(function(data) {
+			console.log('Error: ' + data);
+		});
     }, 1000, 10);
 }]);
 
