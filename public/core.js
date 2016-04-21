@@ -38,24 +38,24 @@ function mainController($scope, $http) {
 
 }
 
-cassandraVis.controller('SalesController', ['$scope','$interval', function($scope, $interval){
-    $scope.salesData=[
-        {hour: 1,sales: 54},
-        {hour: 2,sales: 66},
-        {hour: 3,sales: 77},
-        {hour: 4,sales: 70},
-        {hour: 5,sales: 60},
-        {hour: 6,sales: 63},
-        {hour: 7,sales: 55},
-        {hour: 8,sales: 47},
-        {hour: 9,sales: 55},
-        {hour: 10,sales: 30}
+cassandraVis.controller('TemperatureController', ['$scope','$interval', function($scope, $interval){
+    $scope.temperatureData=[
+        {hour: 1,temperature: 54},
+        {hour: 2,temperature: 66},
+        {hour: 3,temperature: 77},
+        {hour: 4,temperature: 70},
+        {hour: 5,temperature: 60},
+        {hour: 6,temperature: 63},
+        {hour: 7,temperature: 55},
+        {hour: 8,temperature: 47},
+        {hour: 9,temperature: 55},
+        {hour: 10,temperature: 30}
     ];
 
     $interval(function(){
-        var hour=$scope.salesData.length+1;
-        var sales= Math.round(Math.random() * 100);
-        $scope.salesData.push({hour: hour, sales:sales});
+        var hour=$scope.temperatureData.length+1;
+        var temperature= Math.round(Math.random() * 100);
+        $scope.temperatureData.push({hour: hour, temperature:temperature});
     }, 1000, 10);
 }]);
 
@@ -66,7 +66,7 @@ cassandraVis.directive('linearChart', function($parse, $window){
        link: function(scope, elem, attrs){
            var exp = $parse(attrs.chartData);
 
-           var salesDataToPlot=exp(scope);
+           var temperatureDataToPlot=exp(scope);
            var padding = 20;
            var pathClass="path";
            var xScale, yScale, xAxisGen, yAxisGen, lineFun;
@@ -76,26 +76,26 @@ cassandraVis.directive('linearChart', function($parse, $window){
            var svg = d3.select(rawSvg[0]);
 
            scope.$watchCollection(exp, function(newVal, oldVal){
-               salesDataToPlot=newVal;
+               temperatureDataToPlot=newVal;
                redrawLineChart();
            });
 
            function setChartParameters(){
 
                xScale = d3.scale.linear()
-                   .domain([salesDataToPlot[0].hour, salesDataToPlot[salesDataToPlot.length-1].hour])
+                   .domain([temperatureDataToPlot[0].hour, temperatureDataToPlot[temperatureDataToPlot.length-1].hour])
                    .range([padding + 5, rawSvg.attr("width") - padding]);
 
                yScale = d3.scale.linear()
-                   .domain([0, d3.max(salesDataToPlot, function (d) {
-                       return d.sales;
+                   .domain([0, d3.max(temperatureDataToPlot, function (d) {
+                       return d.temperature;
                    })])
                    .range([rawSvg.attr("height") - padding, 0]);
 
                xAxisGen = d3.svg.axis()
                    .scale(xScale)
                    .orient("bottom")
-                   .ticks(salesDataToPlot.length - 1);
+                   .ticks(temperatureDataToPlot.length - 1);
 
                yAxisGen = d3.svg.axis()
                    .scale(yScale)
@@ -107,7 +107,7 @@ cassandraVis.directive('linearChart', function($parse, $window){
                        return xScale(d.hour);
                    })
                    .y(function (d) {
-                       return yScale(d.sales);
+                       return yScale(d.temperature);
                    })
                    .interpolate("basis");
            }
@@ -128,7 +128,7 @@ cassandraVis.directive('linearChart', function($parse, $window){
 
                svg.append("svg:path")
                    .attr({
-                       d: lineFun(salesDataToPlot),
+                       d: lineFun(temperatureDataToPlot),
                        "stroke": "blue",
                        "stroke-width": 2,
                        "fill": "none",
@@ -146,7 +146,7 @@ cassandraVis.directive('linearChart', function($parse, $window){
 
                svg.selectAll("."+pathClass)
                    .attr({
-                       d: lineFun(salesDataToPlot)
+                       d: lineFun(temperatureDataToPlot)
                    });
            }
 
