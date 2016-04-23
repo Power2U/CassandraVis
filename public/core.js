@@ -58,6 +58,7 @@ cassandraVis.controller('TemperatureController', ['$scope','$interval', '$http',
         var temperature= Math.round(Math.random() * 100);
         //$scope.temperatureData.push({hour: hour, temperature:temperature});
 	counter++;
+        /* ---------- This is approxmatealy how the data will be fetched from the server ---------
 	if (counter > 99) counter = 0;
 	$http.get('/api/temperatures')
 		.success(function(data) {
@@ -67,13 +68,14 @@ cassandraVis.controller('TemperatureController', ['$scope','$interval', '$http',
 		.error(function(data) {
 			console.log('Error: ' + data);
 		});
+	*/
     }, 1000, 10);
 }]);
 
 cassandraVis.directive('linearChart', function($parse, $window){
    return{
       restrict:'EA',
-      template:"<svg width='850' height='200'></svg>",
+      template:"<svg width='850' min-width='200' height='200'></svg>",
        link: function(scope, elem, attrs){
            var exp = $parse(attrs.chartData);
 
