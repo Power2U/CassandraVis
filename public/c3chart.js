@@ -1,4 +1,4 @@
-function drawChart(data){
+function drawChart(){
 var chart = c3.generate({
     data: {
         x: 'x',
