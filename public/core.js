@@ -66,11 +66,8 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
  
     $scope.typeOptions=["line","bar","spline","step","area","area-step","area-spline"];
                         
-    $scope.config.data1="30, 200, 100, 200, 150, 250";
-    $scope.config.data2="70, 30, 10, 240, 150, 125";
-                        
-    $scope.config.type1="spline";
-    $scope.config.type2="spline";
+    $scope.config.type1="area-spline";
+    $scope.config.type2="area-spline";
     $scope.config.keys={"x":"x","value":["data1","data2"]};
  
     $scope.keepLoading = true;
@@ -81,10 +78,16 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         config.data = {};
         config.data.keys = $scope.config.keys;
         config.data.json = $scope.config.data;
+        
+        config.data.onmouseover = function (d) {
+            chart.focus(d);
+        }
         config.axis = {};
         config.axis.x = {
             "type":"timeseries",
-            "tick":{"format":"%S"}
+            "tick":{
+                 format: '%m-%S'
+            }
         };
         config.axis.y = {"label":{"text":"Number of items","position":"outer-middle"}};
         
@@ -94,8 +97,11 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
             enabled: "true", // Enable zoom
             rescale: "false" //Do not rescale Y axis while zooming.
         };
+        config.subchart = {
+            show : "true"
+        }
         config.color = {
-            pattern : ['#1f77b4', '#ff7f0e', '#ffbb78', '#2ca02c']
+            pattern : ['#ff7f0e', '#1f77b4', '#ff7f0e', '#2ca02c']
         }
         
         $scope.chart = c3.generate(config);     

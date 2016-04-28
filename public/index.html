@@ -35,10 +35,11 @@
          <button class="btn-primary" ng-click="startLoading()">Start Loading data</button>
          <button class="btn-primary" ng-click="stopLoading()">Stop Loading data</button>
          <form novalidate>
-            <p>Enter in format: val1,val2,val3,etc</p>
+            <p>Choose the shape of graphs</p>
             <select class="selectpicker" data-style="btn-primary" ng-model="config.type1" ng-options="typeOption for typeOption in typeOptions"></select>
+            <select class="selectpicker" data-style="btn-primary" ng-model="config.type2" ng-options="typeOption for typeOption in typeOptions"></select>
+             
          </form>
-         <script src="c3chart.js"></script>
          <div id="chart"></div>
       </div>
    </body>
