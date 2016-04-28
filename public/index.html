@@ -1,99 +1,45 @@
 <!doctype html>
-
 <!-- ASSIGN OUR ANGULAR MODULE -->
 <html ng-app="cassandraVis">
-<head>
-	<!-- META -->
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
-
-	<title>CassandraVis</title>
-
-	<!-- SCROLLS -->
-	<link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
-  	<link rel="stylesheet" href="styles_c3.css"><!-- load bootstrap -->
-	<style>
-		html 					{ overflow-y:scroll; }
-		body 					{ padding-top:50px; }
-		#todo-list 				{ margin-bottom:30px; }
-		#todo-form 	 			{ margin-bottom:50px; }
-	</style>
-
-	<!-- SPELLS -->
-	<script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
-	<script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="http://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.js"></script>
-	<script src="core.js"></script>
-
-
-</head>
-<!-- SET THE CONTROLLER AND GET ALL TODOS WITH INITIALIZE FUNCTION -->
-<body ng-controller="mainController">
-	<div class="container">
-
-		<!-- HEADER AND TODO COUNT -->
-		<div class="jumbotron text-center">
-			<h1>I'm a Todo-aholic <span class="label label-info">{{ todos.length }}</span></h1>
-		</div>
-
-        <!-- TODO LIST -->
-		<div id="todo-list" class="row">
-			<div class="col-sm-4 col-sm-offset-4">
-
-				<!-- LOOP OVER THE TODOS IN $scope.todos -->
-				<div class="checkbox" ng-repeat="todo in todos">
-					<label>
-						<input type="checkbox" ng-click="deleteTodo(todo._id)"> {{ todo.text }}
-					</label>
-				</div>
-
-			</div>
-		</div>
-
-		<!-- FORM TO CREATE TODOS -->
-		<div id="todo-form" class="row">
-			<div class="col-sm-8 col-sm-offset-2 text-center">
-				<form>
-					<div class="form-group">
-
-						<!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
-						<input type="text" class="form-control input-lg text-center" placeholder="I want to buy a puppy that will love me forever" ng-model="formData.text">
-					</div>
-
-					<!-- createToDo() WILL CREATE NEW TODOS -->
-					<button type="submit" class="btn btn-primary btn-lg" ng-click="createTodo()">Add</button>
-				</form>
-			</div>
-		</div>
-		<!-- Thank you scotch!!! Tutorial was awesome!
-		<div class="text-center text-muted">
-			<p>A demo by <a href="http://scotch.io">Scotch</a>.</p>
-			<p>Read the <a href="http://scotch.io/tutorials/javascript/creating-a-single-page-todo-app-with-node-and-angular">tutorial</a>.</p>
-		</div>
-		-->
-<!--
-		<div ng-controller="TemperatureController">
-		  <h1>Today's Temp Chart</h1>
-		  <div linear-chart chart-data="temperatureData"></div>
-		</div>
--->
-        <div ng-controller="TemperatureController" ng-init="drawChart()">
-        <form novalidate>
-    <p>Enter in format: val1,val2,val3,etc</p>
-    <select ng-model="type1" ng-options="typeOption for typeOption in typeOptions"></select>
-</form>
-        
-             <script src="c3chart.js"></script>
-            <div id="chart"></div>
-<!--
-        <div ng-controller="TemperatureController">
-        <div id="chart">    
-            <script src="c3chart.js"></script>
-        </div>
-            </div>
--->
-	</div>
-
-</body>
+   <head>
+      <!-- META -->
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- Optimize mobile viewport -->
+      <title>CassandraVis</title>
+      <!-- SCROLLS -->
+      <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+      <!-- load bootstrap -->
+      <link rel="stylesheet" href="styles_c3.css">
+      <!-- load bootstrap -->
+      <style>
+         html 					{ overflow-y:scroll; }
+         body 					{ padding-top:50px; }
+         #todo-list 				{ margin-bottom:30px; }
+         #todo-form 	 			{ margin-bottom:50px; }
+      </style>
+      <!-- SPELLS -->
+      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
+      <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> <!-- load d3 -->
+      <script src="http://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.js"></script> <!-- load c3 -->
+      <script src="core.js"></script>
+   </head>
+   <!-- SET THE CONTROLLER AND GET ALL TODOS WITH INITIALIZE FUNCTION -->
+   <body ng-controller="mainController">
+      <div class="container">
+      <!-- HEADER AND TODO COUNT -->
+      <div class="jumbotron text-center">
+         <h1>Cassandra Vis</h1>
+      </div>
+      <div ng-controller="TemperatureController" ng-init="showGraph()">
+         <button class="btn-primary" ng-click="startLoading()">Start Loading data</button>
+         <button class="btn-primary" ng-click="stopLoading()">Stop Loading data</button>
+         <form novalidate>
+            <p>Enter in format: val1,val2,val3,etc</p>
+            <select class="selectpicker" data-style="btn-primary" ng-model="config.type1" ng-options="typeOption for typeOption in typeOptions"></select>
+         </form>
+         <script src="c3chart.js"></script>
+         <div id="chart"></div>
+      </div>
+   </body>
 </html>
-
