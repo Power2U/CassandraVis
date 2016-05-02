@@ -9,6 +9,11 @@ var morgan = require('morgan'); 		// log requests to the console (express4)
 var bodyParser = require('body-parser'); 	// pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
+
+// 2 lines to get favicon running
+var favicon = require('serve-favicon');
+app.use(favicon(__dirname + '/public/img/favicon.ico')); //
+
 // configuration ===============================================================
 mongoose.connect(database.url, function(err){
 	if (err) throw err;
