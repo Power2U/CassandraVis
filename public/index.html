@@ -48,8 +48,10 @@
           <form class = "form-inline" novalidate>
             <p>Choose the shape of graphs</p>
             
-            <span class="add-on" style="width: 70px; text-align: right;">Appartment</span>
-              
+            <span class="add-on" style="width: 70px; text-align: right;">Apartment</span>
+            
+             <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice" ng-options="apartment for apartment in apartmentOptions"></select>  
+              <select class="form-control" data-style="btn-primary" ng-model="viewMode" ng-options="mode for mode in viewModeOptions"></select>  
             <select class="form-control" data-style="btn-primary" ng-model="config.type1" ng-options="typeOption for typeOption in typeOptions"></select>
             <select class="form-control" data-style="btn-primary" ng-model="config.type2" ng-options="typeOption for typeOption in typeOptions"></select>
               <button class="btn btn-primary" ng-click="startLoading()">Start Loading data</button>

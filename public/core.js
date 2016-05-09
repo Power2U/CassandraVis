@@ -3,6 +3,7 @@ var services = angular.module('cassandraVis.services', []);
 services.factory('dataService', ["$http", function($http) {
     function DataService() {
         var data = [];
+        var apartmentsIDs = [];
         var numDataPoints = 60;
         var maxNumber = 200;
       
@@ -14,30 +15,36 @@ services.factory('dataService', ["$http", function($http) {
             callback(data);
         };
         
-       
-        
-        // ======= Test =========
-            
-        this.loadCassandraData = function(callback) {
-            $http.get('/api/getcassandradata').success(function(cassandradata) {
-                for(var row = 0; row < cassandradata.rows.length; row++ ){
-                    data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value,"data2":randomNumber()});
-                    callback(data);
-                }
-            }).error(function(cassandradata) {
-                console.log('Error: ' + data);
-            });
-            
-  };
-        
-        // ========== END Test ==========
  
         function randomNumber() {
             return Math.floor((Math.random() * maxNumber) + 1);
         }
+        
+        
+        this.getDataCassandra = function (params, callback) {
+        $http.get('/api/getcassandradata/' + params).success(function(cassandradata) {
+                for(var row = 0; row < cassandradata.rows.length; row++ ){
+                    data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value,"data2": "0.1"});
+                    
+                }
+                callback(data);
+            }).error(function(cassandradata) {
+                console.log('Error: ' + data);
+            });
+    }
+        
+        this.getAparmentsIDs = function (callback) {
+         $http.get('/api/getapartmentsids').success(function(apartments) {
+                for(var row = 0; row < apartments.length; row++ ){
+                    apartmentsIDs.push(apartments[row]);
+                    
+                }
+         });
+    }
+        
     }
     
-        
+ 
     return new DataService();
 }]);
 
@@ -85,7 +92,11 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
  
 
     $scope.config.data=[]
- 
+    
+    $scope.apartmentOptions = [1,2,3,4,5];
+    $scope.viewModeOptions = ["monthly", "weekly", "daily"];
+    $scope.viewMode = "monthly"
+    $scope.apartmentChoice = 1;
     $scope.typeOptions=["line","bar","spline","step","area","area-step","area-spline"];
                         
     $scope.config.type1="area-spline";
@@ -93,7 +104,7 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.config.keys={"x":"x","value":["data1","data2"]};
  
     $scope.keepLoading = true;
- 
+    dataService.getAparmentsIDs();
     $scope.showGraph = function() {
         var config = {};
         config.bindto = '#chart';
@@ -108,7 +119,7 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         config.axis.x = {
             "type":"timeseries",
             "tick":{
-                 format: '%m-%S'
+                 format: '%Y-%m'
             }
         };
         config.axis.y = {"label":{"text":"Number of items","position":"outer-middle"}};
@@ -191,7 +202,8 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     
     
      $scope.loadNewDataC = function() {
-        $scope.getDataCassandra(function(newData) {
+         var params = $scope.apartmentChoice + "," + $scope.viewMode;
+        dataService.getDataCassandra(params, function(newData) {
             var data = {};
             console.log("Correct function")
             console.log(newData);
@@ -248,20 +260,6 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
    while (currentTime + miliseconds >= new Date().getTime()) {
    }
 }
-    $scope.getDataCassandra = function (callback) {
-        var data = [];
-        $http.get('/api/getcassandradata').success(function(cassandradata) {
-                for(var row = 0; row < cassandradata.rows.length; row++ ){
-                    data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value,"data2": "0.1"});
-                    
-                }
-                callback(data);
-            }).error(function(cassandradata) {
-                console.log('Error: ' + data);
-            });
-    }
-
-
     $scope.intervalFunction();
     
     
