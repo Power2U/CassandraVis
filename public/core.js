@@ -1,11 +1,11 @@
 var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services']);
 var services = angular.module('cassandraVis.services', []);
-services.factory('dataService', [function() {
+services.factory('dataService', ["$http", function($http) {
     function DataService() {
         var data = [];
         var numDataPoints = 60;
         var maxNumber = 200;
- 
+      
         this.loadData = function(callback) {
             if (data.length > numDataPoints) {
                 data.shift();
@@ -13,13 +13,35 @@ services.factory('dataService', [function() {
             data.push({"x":new Date(),"data1":randomNumber(),"data2":randomNumber()});
             callback(data);
         };
+        
+       
+        
+        // ======= Test =========
+            
+        this.loadCassandraData = function(callback) {
+            $http.get('/api/getcassandradata').success(function(cassandradata) {
+                for(var row = 0; row < cassandradata.rows.length; row++ ){
+                    data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value,"data2":randomNumber()});
+                    callback(data);
+                }
+            }).error(function(cassandradata) {
+                console.log('Error: ' + data);
+            });
+            
+  };
+        
+        // ========== END Test ==========
  
         function randomNumber() {
             return Math.floor((Math.random() * maxNumber) + 1);
         }
     }
+    
+        
     return new DataService();
 }]);
+
+
 function mainController($scope, $http) {
     $scope.formData = {};
     // when landing on the page, get all todos and show them
@@ -107,44 +129,44 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         $scope.chart = c3.generate(config);     
     }
     
-    
-     $scope.temperatureData = [{
-        hour: 1,
-        temperature: 54
-    }, {
-        hour: 2,
-        temperature: 66
-    }, {
-        hour: 3,
-        temperature: 77
-    }, {
-        hour: 4,
-        temperature: 70
-    }, {
-        hour: 5,
-        temperature: 60
-    }, {
-        hour: 6,
-        temperature: 63
-    }, {
-        hour: 7,
-        temperature: 55
-    }, {
-        hour: 8,
-        temperature: 47
-    }, {
-        hour: 9,
-        temperature: 55
-    }, {
-        hour: 10,
-        temperature: 30
-    }];
-       
-   
+//    
+//     $scope.temperatureData = [{
+//        hour: 1,
+//        temperature: 54
+//    }, {
+//        hour: 2,
+//        temperature: 66
+//    }, {
+//        hour: 3,
+//        temperature: 77
+//    }, {
+//        hour: 4,
+//        temperature: 70
+//    }, {
+//        hour: 5,
+//        temperature: 60
+//    }, {
+//        hour: 6,
+//        temperature: 63
+//    }, {
+//        hour: 7,
+//        temperature: 55
+//    }, {
+//        hour: 8,
+//        temperature: 47
+//    }, {
+//        hour: 9,
+//        temperature: 55
+//    }, {
+//        hour: 10,
+//        temperature: 30
+//    }];
+//       
+//   
     
     $scope.startLoading = function() {
         $scope.keepLoading = true;
-        $scope.loadNewData();
+        $scope.loadNewDataC();
     }
  
     $scope.stopLoading = function() {
@@ -154,6 +176,7 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.loadNewData = function() {
         dataService.loadData(function(newData) {
             var data = {};
+            console.log(newData);
             data.keys = $scope.config.keys;
             data.json = newData;
             data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
@@ -164,6 +187,20 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
                 }
             },1000);            
         });
+    }
+    
+    
+     $scope.loadNewDataC = function() {
+        $scope.getDataCassandra(function(newData) {
+            var data = {};
+            console.log("Correct function")
+            console.log(newData);
+            data.keys = $scope.config.keys;
+            data.json = newData;
+            data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
+            $scope.chart.load(data);                    
+        });
+        
     }
     
     $scope.getData = function() {
@@ -204,11 +241,32 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
             $scope.intervalFunction();
         }, 3000);
     };
+    
+    $scope.sleep = function (miliseconds) {
+   var currentTime = new Date().getTime();
+
+   while (currentTime + miliseconds >= new Date().getTime()) {
+   }
+}
+    $scope.getDataCassandra = function (callback) {
+        var data = [];
+        $http.get('/api/getcassandradata').success(function(cassandradata) {
+                for(var row = 0; row < cassandradata.rows.length; row++ ){
+                    data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value,"data2": "0.1"});
+                    
+                }
+                callback(data);
+            }).error(function(cassandradata) {
+                console.log('Error: ' + data);
+            });
+    }
+
 
     $scope.intervalFunction();
+    
+    
     //drawChart($scope.temperatureData);
 }]);
-
 
 
 

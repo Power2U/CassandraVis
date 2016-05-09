@@ -11,7 +11,7 @@
       <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
       <!-- load bootstrap -->
       <link rel="stylesheet" href="styles_c3.css">
-      <!-- load bootstrap -->
+      <link rel="stylesheet" href="myStyles.css">
       <style>
          html 					{ overflow-y:scroll; }
          body 					{ padding-top:50px; }
@@ -26,12 +26,15 @@
    </head>
    <!-- SET THE CONTROLLER AND GET ALL TODOS WITH INITIALIZE FUNCTION -->
    <body ng-controller="mainController">
-      <div class="container">
-      <!-- HEADER AND TODO COUNT -->
-    <div class="navbar navbar-inverse navbar-fixed-top">
+       
+        <div class="navbar navbar-inverse navbar-fixed-top">
       
     </div>
           
+       
+      <div class="fullscreen container">
+      <!-- HEADER AND TODO COUNT -->
+   
 <!--
       <div class="jumbotron text-center">
          <h1>Cassandra Vis</h1>
@@ -42,8 +45,6 @@
           
       <div ng-controller="TemperatureController" ng-init="showGraph()">
 
-         <div id="chart"></div>
-          
           <form class = "form-inline" novalidate>
             <p>Choose the shape of graphs</p>
             
@@ -54,6 +55,10 @@
               <button class="btn btn-primary" ng-click="startLoading()">Start Loading data</button>
               <button class="btn btn-danger btn-warning" ng-click="stopLoading()">Stop Loading data</button>
          </form>
+         <div id="chart"></div>
+          
+          
       </div>
+       </div>
    </body>
 </html>

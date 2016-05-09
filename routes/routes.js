@@ -1,5 +1,17 @@
 var Todo = require('../models/todo');
 var Temperature = require('../models/temperature');
+const cassandra = require('cassandra-driver');
+var database = require('../config/database'); 
+
+const client = new cassandra.Client({ contactPoints: [database.cassandra.url], keyspace : database.cassandra.keyspace });
+client.connect(function (err) {
+  //if (err) throw err;
+    //DEV_MODE:
+    if (err) console.log("***ERROR*** \n Could not Connect to Cassandra \n" + err);
+    
+});
+
+
 
 module.exports = function(app) {
 
@@ -80,6 +92,38 @@ module.exports = function(app) {
 					res.send(err);
 			});
 		}
+	});
+    
+    app.get('/api/getcassandradata', function(req, res) {
+        client.execute("SELECT * FROM data", function (err, result) {
+               if (!err){
+                   if ( result.rows.length > 0 ) {
+                       console.log("Data accessed sucessfuly")
+                       res.json(result)
+                   } else {
+                       console.log("No results");
+                   }
+               }
+        else {
+            throw(err)
+        }
+           });
+	});
+    
+     app.get('/api/getcassandradata', function(req, res) {
+        client.execute("SELECT * FROM data", function (err, result) {
+               if (!err){
+                   if ( result.rows.length > 0 ) {
+                       console.log("Data accessed sucessfuly")
+                       res.json(result)
+                   } else {
+                       console.log("No results");
+                   }
+               }
+        else {
+            throw(err)
+        }
+           });
 	});
  	// ------------------------------------- END TODO ----------------------- 
 	// a

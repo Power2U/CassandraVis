@@ -10,12 +10,14 @@ var bodyParser = require('body-parser'); 	// pull information from HTML POST (ex
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
 
+
 // 2 lines to get favicon running
 var favicon = require('serve-favicon');
 app.use(favicon(__dirname + '/public/img/favicon.ico')); //
 
 // configuration ===============================================================
-mongoose.connect(database.url, function(err){
+
+mongoose.connect(database.mongodb.url, function(err){
 	if (err) throw err;
 }); 	// connect to mongoDB database on modulus.io
 
@@ -32,3 +34,8 @@ require('./routes/routes.js')(app);
 // listen (start app with node server.js) ======================================
 app.listen(port);
 console.log("App listening on port " + port);
+
+
+// test cassandra code =====================
+
+
