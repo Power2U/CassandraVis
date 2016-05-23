@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="cassandraVis">
+<html lang="en">
 
 <head>
 
@@ -14,16 +14,18 @@
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
 
+    <!-- Bootstrap Core CSS RTL-->
+    <link href="css/bootstrap-rtl.min.css" rel="stylesheet">
+
     <!-- Custom CSS -->
     <link href="css/sb-admin.css" rel="stylesheet">
+    <link href="css/sb-admin-rtl.css" rel="stylesheet">
 
     <!-- Morris Charts CSS -->
     <link href="css/plugins/morris.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    
-     <link rel="stylesheet" href="styles_c3.css">
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -31,18 +33,12 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    
-      <!-- SPELLS -->
-      <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script><!-- load angular -->
-      <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script> <!-- load d3 -->
-      <script src="http://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.js"></script> <!-- load c3 -->
-      
 
 </head>
 
 <body>
 
-    <div id="wrapper" ng-controller="TemperatureController" ng-init="showGraph()">
+    <div id="wrapper">
 
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -160,7 +156,7 @@
             <!-- Sidebar Menu Items - These collapse to the responsive navigation menu on small screens -->
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
-                    <li class="active">
+                    <li>
                         <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
                     </li>
                     <li>
@@ -171,11 +167,6 @@
                     </li>
                     <li>
                         <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
-                    </li>
-                    <li>
-                         <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice" ng-options="apartment for apartment in apartmentOptions"></select>  
-                         <select class="form-control" data-style="btn-primary" ng-model="viewMode" ng-options="mode for mode in viewModeOptions"></select>  
-                        <button class="btn btn-primary" ng-click="startLoading()">Start Loading data</button>
                     </li>
                     <li>
                         <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
@@ -197,7 +188,7 @@
                     <li>
                         <a href="blank-page.html"><i class="fa fa-fw fa-file"></i> Blank Page</a>
                     </li>
-                    <li>
+                    <li class="active">
                         <a href="index-rtl.html"><i class="fa fa-fw fa-dashboard"></i> RTL Dashboard</a>
                     </li>
                 </ul>
@@ -325,7 +316,6 @@
                     </div>
                 </div>
                 <!-- /.row -->
-<!--
 
                 <div class="row">
                     <div class="col-lg-12">
@@ -336,22 +326,6 @@
                             <div class="panel-body">
                                 <div id="morris-area-chart"></div>
                             </div>
-                        </div>
-                    </div>
-                </div>
--->
-                <!-- /.row -->
-                
-                   <!-- /.row -->
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
-                            </div>
-                            <div id="chart">
-                            <script src="core.js"></script></div>
                         </div>
                     </div>
                 </div>
@@ -496,6 +470,7 @@
 
             </div>
             <!-- /.container-fluid -->
+
         </div>
         <!-- /#page-wrapper -->
 

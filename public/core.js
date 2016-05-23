@@ -22,8 +22,10 @@ services.factory('dataService', ["$http", function($http) {
         
         
         this.getDataCassandra = function (params, callback) {
+            data = [];
         $http.get('/api/getcassandradata/' + params).success(function(cassandradata) {
                 for(var row = 0; row < cassandradata.rows.length; row++ ){
+                    console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
                     data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value,"data2": "0.1"});
                     
                 }
@@ -33,13 +35,18 @@ services.factory('dataService', ["$http", function($http) {
             });
     }
         
-        this.getAparmentsIDs = function (callback) {
+        this.getApartmentsIDs = function (callback) {
+            
+            console.log("we are here. so its okay")
          $http.get('/api/getapartmentsids').success(function(apartments) {
-                for(var row = 0; row < apartments.length; row++ ){
-                    apartmentsIDs.push(apartments[row]);
+                for(var row = 0; row < apartments.rows.length; row++ ){
+                    apartmentsIDs.push(apartments.rows[row].id);
+                      console.log(apartments.rows[row].id);
                     
                 }
+             callback(apartmentsIDs);
          });
+       
     }
         
     }
@@ -93,9 +100,9 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
 
     $scope.config.data=[]
     
-    $scope.apartmentOptions = [1,2,3,4,5];
+    $scope.apartmentsOptions = [];
     $scope.viewModeOptions = ["monthly", "weekly", "daily"];
-    $scope.viewMode = "monthly"
+    $scope.viewMode = "monthly";
     $scope.apartmentChoice = 1;
     $scope.typeOptions=["line","bar","spline","step","area","area-step","area-spline"];
                         
@@ -104,8 +111,12 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.config.keys={"x":"x","value":["data1","data2"]};
  
     $scope.keepLoading = true;
-    dataService.getAparmentsIDs();
+    
+    dataService.getApartmentsIDs(function(apartmentsIDs){
+        $scope.apartmentOptions = apartmentsIDs;
+    });
     $scope.showGraph = function() {
+        console.log("WE ARE WORKING!");
         var config = {};
         config.bindto = '#chart';
         config.data = {};
