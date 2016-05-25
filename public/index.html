@@ -173,7 +173,9 @@
                         <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
                     </li>
                     <li>
-                         <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice" ng-options="apartment for apartment in apartmentOptions"></select>  
+                        <select class="form-control" data-style="btn-primary" ng-model="numApartments" ng-options="num for num in numApartmentOptions"></select>  
+                         <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select>  
+                        <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice2" ng-options="apartment for apartment in apartmentOptions"></select>  
                          <select class="form-control" data-style="btn-primary" ng-model="viewMode" ng-options="mode for mode in viewModeOptions"></select>  
                         <button class="btn btn-primary" ng-click="startLoading()">Start Loading data</button>
                     </li>

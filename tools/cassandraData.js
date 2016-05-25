@@ -23,12 +23,10 @@ module.exports.getData = function(req, res, params) {
     var apartmentID = "'" + parameters[0] + "'";
     var viewMode = parameters[1];
     console.log("**** View Mode:" + viewMode);
-    var curMonth = 1;
-    switch (viewMode) {
-        case 'monthly':
+    console.log("SELECT * FROM " + viewMode + " WHERE");
                 //var dateStart = "'2015-" + ntos(curMonth) + "-01'";
                 //var dateEnd = "'2015-" + ntos(++curMonth) + "-01'";
-                client.execute("SELECT * FROM monthly WHERE id=" + apartmentID , function(err, result) {
+                client.execute("SELECT * FROM " + viewMode + " WHERE id=" + apartmentID , function(err, result) {
                     if (!err) {
                         if (result.rows.length > 0) {
                             console.log("Data accessed sucessfuly");
@@ -42,7 +40,6 @@ module.exports.getData = function(req, res, params) {
                         throw (err)
                     }
                 });
-    }
 }
 //||||||| merged common ancestors
 //=======
@@ -78,58 +75,6 @@ module.exports.getData = function(req, res, params) {
 //    }
 //
 //<<<<<<< HEAD
-
-    //console.log("Current month: " + dateStart) + "End Date: " + dateEnd;
-    //
-    //    client.execute("SELECT * FROM data WHERE id=" + apartmentID + " AND ts > " + dateStart + " AND ts < " + dateEnd, function (err, result) {
-    //               if (!err){
-    //                   if ( result.rows.length > 0 ) {
-    //                       console.log("Data accessed sucessfuly")
-    //                       res.json(result)
-    //                   } else {
-    //                       console.log("No results");
-    //                   }
-    //               }
-    //        else {
-    //            throw(err)
-    //        }
-    //           });
-//||||||| merged common ancestors
-//    
-//    
-//    client.execute("SELECT * FROM data WHERE id= '12109435EL' AND ts < '2015-04-01' AND ts > '2015-03-31'", function (err, result) {
-//               if (!err){
-//                   if ( result.rows.length > 0 ) {
-//                       console.log("Data accessed sucessfuly this")
-//                       res.json(result)
-//                   } else {
-//                       console.log("No results");
-//                   }
-//               }
-//        else {
-//            throw(err)
-//        }
-//           });
-//=======
-
-//    console.log("Current month: " + dateStart) + "End Date: " + dateEnd;
-    //
-    //    client.execute("SELECT * FROM data WHERE id=" + apartmentID + " AND ts > " + dateStart + " AND ts < " + dateEnd, function (err, result) {
-    //               if (!err){
-    //                   if ( result.rows.length > 0 ) {
-    //                       console.log("Data accessed sucessfuly")
-    //                       res.json(result)
-    //                   } else {
-    //                       console.log("No results");
-    //                   }
-    //               }
-    //        else {
-    //            throw(err)
-    //        }
-    //           });
-//>>>>>>> 2bd86114f2319e0ce73014a71128712f20819b79
-//}
-
 module.exports.getApartmentsIDs = function(req, res) {
     client.execute("SELECT * FROM apartments", function(err, result) {
         if (!err) {

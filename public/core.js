@@ -23,16 +23,63 @@ services.factory('dataService', ["$http", function($http) {
         
         this.getDataCassandra = function (params, callback) {
             data = [];
-        $http.get('/api/getcassandradata/' + params).success(function(cassandradata) {
-                for(var row = 0; row < cassandradata.rows.length; row++ ){
-                    console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
-                    data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value,"data2": "0.1"});
-                    
-                }
-                callback(data);
-            }).error(function(cassandradata) {
-                console.log('Error: ' + data);
-            });
+            var inParams = params.split(',');
+            var numApartments = inParams[0];
+   
+            
+            
+            console.log(params);
+        
+            var outParams = inParams[1];
+            for(var i = 2; i < inParams.length; i++){
+                outParams += "," + inParams[i];
+            }
+            
+   
+            console.log("Number of apartments: " + numApartments);
+            switch(numApartments){
+                case "1":
+                    outParams = inParams[1] + ',' + inParams[2];
+                    console.log("Out parameters " + outParams);
+                      $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
+                            for(var row = 0; row < cassandradata.rows.length; row++ ){
+//                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
+                                data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value});
+                            }
+                            callback(data);
+                        }).error(function(cassandradata) {
+                            console.log('Error: ' + data);
+                        });
+                    break;
+                case "2":
+                    console.log("Working with 2 apartments");
+                    outParams = inParams[1] + ',' + inParams[3];
+                     console.log("Out parameters " + outParams);
+                      $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
+                            for(var row = 0; row < cassandradata.rows.length; row++ ){
+//                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
+                                data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value});
+                            }
+                          
+                          outParams = inParams[2] + ',' + inParams[3];
+                            $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
+                                    for(var row = 0; row < cassandradata.rows.length; row++ ){
+        //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
+                                        data[row]["data2"] = cassandradata.rows[row].value;
+                                    }
+                                    callback(data);
+                                }).error(function(cassandradata) {
+                                    console.log('Error: ' + data);
+                                });
+                          
+                        }).error(function(cassandradata) {
+                            console.log('Error: ' + data);
+                        });
+                    break;
+                default:
+            }
+            
+          
     }
         
         this.getApartmentsIDs = function (callback) {
@@ -40,9 +87,7 @@ services.factory('dataService', ["$http", function($http) {
             console.log("we are here. so its okay")
          $http.get('/api/getapartmentsids').success(function(apartments) {
                 for(var row = 0; row < apartments.rows.length; row++ ){
-                    apartmentsIDs.push(apartments.rows[row].id);
-                      console.log(apartments.rows[row].id);
-                    
+                    apartmentsIDs.push(apartments.rows[row].id);  
                 }
              callback(apartmentsIDs);
          });
@@ -100,10 +145,10 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
 
     $scope.config.data=[]
     
-    $scope.apartmentsOptions = [];
+    $scope.numApartmentOptions = [1,2];
+    $scope.numApartments = $scope.numApartmentOptions[0];
     $scope.viewModeOptions = ["monthly", "weekly", "daily"];
     $scope.viewMode = "monthly";
-    $scope.apartmentChoice = 1;
     $scope.typeOptions=["line","bar","spline","step","area","area-step","area-spline"];
                         
     $scope.config.type1="area-spline";
@@ -130,9 +175,35 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         config.axis.x = {
             "type":"timeseries",
             "tick":{
+                 format: '%Y-%m-%d'
+            }
+        };
+        
+           switch($scope.viewMode){
+            case "monthly":
+                  config.axis.x = {
+            "type":"timeseries",
+            "tick":{
+                count : 12,
                  format: '%Y-%m'
             }
         };
+                break;
+            case "daily":
+                   
+                  config.axis.x = {
+            "type":"timeseries",
+            "tick":{
+                culling: {
+                },
+                 format: '%Y-%m-%d'
+            }
+        };
+                break;
+            default:
+        }
+       
+        
         config.axis.y = {"label":{"text":"Number of items","position":"outer-middle"}};
         
         config.data.types={"data1":$scope.config.type1,"data2":$scope.config.type2}; // Type of graph used for dataset
@@ -145,46 +216,12 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
             show : "true"
         }
         config.color = {
-            pattern : ['#ff7f0e', '#1f77b4', '#ff7f0e', '#2ca02c']
+            pattern : ['#ff7f0e', '#1f77b4', '#2ca02c' ]
         }
         
         $scope.chart = c3.generate(config);     
     }
     
-//    
-//     $scope.temperatureData = [{
-//        hour: 1,
-//        temperature: 54
-//    }, {
-//        hour: 2,
-//        temperature: 66
-//    }, {
-//        hour: 3,
-//        temperature: 77
-//    }, {
-//        hour: 4,
-//        temperature: 70
-//    }, {
-//        hour: 5,
-//        temperature: 60
-//    }, {
-//        hour: 6,
-//        temperature: 63
-//    }, {
-//        hour: 7,
-//        temperature: 55
-//    }, {
-//        hour: 8,
-//        temperature: 47
-//    }, {
-//        hour: 9,
-//        temperature: 55
-//    }, {
-//        hour: 10,
-//        temperature: 30
-//    }];
-//       
-//   
     
     $scope.startLoading = function() {
         $scope.keepLoading = true;
@@ -194,69 +231,101 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.stopLoading = function() {
         $scope.keepLoading = false;
     }
- 
-    $scope.loadNewData = function() {
-        dataService.loadData(function(newData) {
-            var data = {};
-            console.log(newData);
-            data.keys = $scope.config.keys;
-            data.json = newData;
-            data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
-            $scope.chart.load(data);
-            $timeout(function(){
-                if ($scope.keepLoading) {
-                    $scope.loadNewData()                
-                }
-            },1000);            
-        });
-    }
-    
+
     
      $scope.loadNewDataC = function() {
-         var params = $scope.apartmentChoice + "," + $scope.viewMode;
-        dataService.getDataCassandra(params, function(newData) {
-            var data = {};
-            console.log("Correct function")
-            console.log(newData);
-            data.keys = $scope.config.keys;
-            data.json = newData;
-            data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
-            $scope.chart.load(data);                    
-        });
-        
+         console.log("function is called");
+         
+     
+        $scope.showGraph();
+         switch($scope.numApartments){
+             case 1:
+                 console.log("Chose 1 appartment");
+                 var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.viewMode;
+                 console.log(params);
+                    dataService.getDataCassandra(params, function(newData) {
+                        var data = {};
+//                        console.log("Correct function")
+//                        console.log(newData);
+                        data.keys = $scope.config.keys;
+                        data.json = newData;
+                        data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
+                        data.names = {data1: $scope.apartmentChoice1};
+                        //data.types = {"data1":$scope.config.type1};
+                        $scope.chart.load(data);
+                    });
+                 break;
+             case 2:
+                 var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.apartmentChoice2 + "," + $scope.viewMode;
+                    dataService.getDataCassandra(params, function(newData) {
+                    var data = {};
+//                    console.log("Correct function")
+//                    console.log(newData);
+                    data.keys = $scope.config.keys;
+                    data.json = newData;
+//                    data.types = {};
+                    //data.types[$scope.apartmentChoice1] = $scope.config.type1;
+                    //data.types[$scope.apartmentChoice2] = $scope.config.type2;
+                    data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
+                    $scope.chart.load(data);                    
+                    });
+                 break;
+             default:
+                 console.log("Choose correct number of apartments");
+         }
+         $scope.stopLoading();
     }
     
-    $scope.getData = function() {
-
-        $http.get('/api/temperatures')
-            .success(function(data) {
-                for (var dataIndex = 0; dataIndex < data.length; ++dataIndex) {
-                    var hasMatch = false;
-                    for (var index = 0; index < $scope.temperatureData.length; ++index) {
-                        if ($scope.temperatureData[index].hour === data[dataIndex].hour) {
-                            hasMatch = true;
-                            break;
-                        }
-                    }
-                    
-                         if (!hasMatch) {
-                            $scope.temperatureData.push({
-                                hour: data[dataIndex].hour,
-                                temperature: data[dataIndex].value
-                            });
-                              console.log("new data added! " + $scope.temperatureData[$scope.temperatureData.length-1].hour);
-                        }
-
-                }
-            
-            console.log("Size of Temperature: " + $scope.temperatureData.length);
-
-            })
-            .error(function(data) {
-                console.log('Error: ' + data);
-            });
-
-    }
+// 
+//    $scope.loadNewData = function() {
+//        dataService.loadData(function(newData) {
+//            var data = {};
+//            console.log(newData);
+//            data.keys = $scope.config.keys;
+//            data.json = newData;
+//            data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
+//            $scope.chart.load(data);
+//            $timeout(function(){
+//                if ($scope.keepLoading) {
+//                    $scope.loadNewData()                
+//                }
+//            },1000);            
+//        });
+//    }
+//         
+     
+     
+//    $scope.getData = function() {
+//
+//        $http.get('/api/temperatures')
+//            .success(function(data) {
+//                for (var dataIndex = 0; dataIndex < data.length; ++dataIndex) {
+//                    var hasMatch = false;
+//                    for (var index = 0; index < $scope.temperatureData.length; ++index) {
+//                        if ($scope.temperatureData[index].hour === data[dataIndex].hour) {
+//                            hasMatch = true;
+//                            break;
+//                        }
+//                    }
+//                    
+//                         if (!hasMatch) {
+//                            $scope.temperatureData.push({
+//                                hour: data[dataIndex].hour,
+//                                temperature: data[dataIndex].value
+//                            });
+//                              console.log("new data added! " + $scope.temperatureData[$scope.temperatureData.length-1].hour);
+//                        }
+//
+//                }
+//            
+//            console.log("Size of Temperature: " + $scope.temperatureData.length);
+//
+//            })
+//            .error(function(data) {
+//                console.log('Error: ' + data);
+//            });
+//
+//    }
     // Function to replicate setInterval using $timeout service.
     $scope.intervalFunction = function() {
         $timeout(function() {
@@ -266,11 +335,10 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     };
     
     $scope.sleep = function (miliseconds) {
-   var currentTime = new Date().getTime();
-
-   while (currentTime + miliseconds >= new Date().getTime()) {
-   }
-}
+       var currentTime = new Date().getTime();
+       while (currentTime + miliseconds >= new Date().getTime()) {
+       }
+    }
     $scope.intervalFunction();
     
     
