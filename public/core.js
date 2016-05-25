@@ -28,7 +28,7 @@ services.factory('dataService', ["$http", function($http) {
    
             
             
-            console.log(params);
+            //console.log(params);
         
             var outParams = inParams[1];
             for(var i = 2; i < inParams.length; i++){
@@ -36,11 +36,11 @@ services.factory('dataService', ["$http", function($http) {
             }
             
    
-            console.log("Number of apartments: " + numApartments);
+            //console.log("Number of apartments: " + numApartments);
             switch(numApartments){
                 case "1":
                     outParams = inParams[1] + ',' + inParams[2];
-                    console.log("Out parameters " + outParams);
+                    //console.log("Out parameters " + outParams);
                       $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
                             for(var row = 0; row < cassandradata.rows.length; row++ ){
 //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
@@ -52,9 +52,9 @@ services.factory('dataService', ["$http", function($http) {
                         });
                     break;
                 case "2":
-                    console.log("Working with 2 apartments");
+//                    console.log("Working with 2 apartments");
                     outParams = inParams[1] + ',' + inParams[3];
-                     console.log("Out parameters " + outParams);
+//                     console.log("Out parameters " + outParams);
                       $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
                             for(var row = 0; row < cassandradata.rows.length; row++ ){
 //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
@@ -84,7 +84,7 @@ services.factory('dataService', ["$http", function($http) {
         
         this.getApartmentsIDs = function (callback) {
             
-            console.log("we are here. so its okay")
+           // console.log("we are here. so its okay")
          $http.get('/api/getapartmentsids').success(function(apartments) {
                 for(var row = 0; row < apartments.rows.length; row++ ){
                     apartmentsIDs.push(apartments.rows[row].id);  
@@ -146,7 +146,7 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.config.data=[]
     
     $scope.numApartmentOptions = [1,2];
-    $scope.numApartments = $scope.numApartmentOptions[0];
+    $scope.numApartments = 1; // default value
     $scope.viewModeOptions = ["monthly", "weekly", "daily"];
     $scope.viewMode = "monthly";
     $scope.typeOptions=["line","bar","spline","step","area","area-step","area-spline"];
@@ -159,6 +159,8 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     
     dataService.getApartmentsIDs(function(apartmentsIDs){
         $scope.apartmentOptions = apartmentsIDs;
+        $scope.apartmentChoice1 = $scope.apartmentOptions[0];
+        $scope.apartmentChoice2 = $scope.apartmentOptions[0];
     });
     $scope.showGraph = function() {
         console.log("WE ARE WORKING!");
@@ -231,18 +233,31 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.stopLoading = function() {
         $scope.keepLoading = false;
     }
-
+    
+    $scope.selectNumApartments = function (num) {
+        
+        $scope.numApartments = num;
+        console.log($scope.numApartments);
+    }
+    $scope.selectViewMode = function (mode) {
+        if (mode != "weekly"){
+            $scope.viewMode = mode;
+            $scope.loadNewDataC();
+        }
+        else {
+            console.log("Weekly is not working yet");
+        }
+    }
     
      $scope.loadNewDataC = function() {
          console.log("function is called");
+         console.log($scope.numApartments);
          
      
         $scope.showGraph();
          switch($scope.numApartments){
              case 1:
-                 console.log("Chose 1 appartment");
                  var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.viewMode;
-                 console.log(params);
                     dataService.getDataCassandra(params, function(newData) {
                         var data = {};
 //                        console.log("Correct function")

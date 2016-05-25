@@ -173,11 +173,7 @@
                         <a href="forms.html"><i class="fa fa-fw fa-edit"></i> Forms</a>
                     </li>
                     <li>
-                        <select class="form-control" data-style="btn-primary" ng-model="numApartments" ng-options="num for num in numApartmentOptions"></select>  
-                         <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select>  
-                        <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice2" ng-options="apartment for apartment in apartmentOptions"></select>  
-                         <select class="form-control" data-style="btn-primary" ng-model="viewMode" ng-options="mode for mode in viewModeOptions"></select>  
-                        <button class="btn btn-primary" ng-click="startLoading()">Start Loading data</button>
+                    
                     </li>
                     <li>
                         <a href="bootstrap-elements.html"><i class="fa fa-fw fa-desktop"></i> Bootstrap Elements</a>
@@ -353,7 +349,39 @@
                                 <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
                             </div>
                             <div id="chart">
-                            <script src="core.js"></script></div>
+                                <script src="core.js"></script>
+                            </div>
+                            <div>
+                                <div class="btn-group" data-toggle="buttons">
+  <label class="btn btn-primary active" ng-click="selectNumApartments(1)">
+    <input type="radio" checked> 1 Apartment
+  </label>
+  <label class="btn btn-primary" ng-click="selectNumApartments(2)">
+    <input type="radio" > 2 Apartments
+  </label>
+</div>
+                                
+<!--                                    <select class="form-control" data-style="btn-primary" ng-model="numApartments" ng-options="num for num in numApartmentOptions"></select>-->
+                                
+                         <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select>  
+                        <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice2" ng-options="apartment for apartment in apartmentOptions" ng-show="numApartments == 2"></select> 
+
+                                <div class="btn-group" data-toggle="buttons">
+  <label class="btn btn-secondary" ng-click="selectViewMode('monthly')">
+    <input type="radio" checked> Montly
+  </label>
+                                <label class="btn btn-secondary" ng-click="selectViewMode('weekly')">
+    <input type="radio" > Weekly
+  </label>
+                                <label class="btn btn-secondary" ng-click="selectViewMode('daily')">
+    <input type="radio" > Daily
+  </label>
+                                </div>
+                                
+                                
+<!--                         <select class="form-control" data-style="btn-primary" ng-model="viewMode" ng-options="mode for mode in viewModeOptions"></select>  -->
+                        <button class="btn btn-primary" ng-click="startLoading()">Show graph</button>
+                            </div>
                         </div>
                     </div>
                 </div>
