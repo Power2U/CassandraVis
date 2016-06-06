@@ -139,6 +139,18 @@ function mainController($scope, $http) {
 }
 
 cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http', '$timeout','dataService', function($scope, $interval, $http, $timeout, dataService) {
+    
+    //String declarations
+    
+    $scope.COMPANYNAME = "Power2U";
+    $scope.USERNAME = "Rustam";
+    $scope.VIEW1 = "Consumption";
+    $scope.VIEW2 = "PV Production";
+    $scope.VIEW3 = "EV";
+    $scope.VIEW4 = "Coins";
+    $scope.GRAPHTYPE = $scope.VIEW1;
+    
+    
     $scope.chart = null;
     $scope.config={};
  
@@ -206,7 +218,7 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         }
        
         
-        config.axis.y = {"label":{"text":"Number of items","position":"outer-middle"}};
+        config.axis.y = {"label":{"text":"KW/h","position":"outer-middle"}};
         
         config.data.types={"data1":$scope.config.type1,"data2":$scope.config.type2}; // Type of graph used for dataset
         

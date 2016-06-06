@@ -9,7 +9,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>SB Admin - Bootstrap Admin Template</title>
+    <title>Power2U</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -39,6 +39,7 @@
     <!-- load d3 -->
     <script src="http://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.js"></script>
     <!-- load c3 -->
+ 
 
 
 </head>
@@ -57,7 +58,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">SB Admin</a>
+                <a class="navbar-brand" href="index.html">{{COMPANYNAME}}</a>
             </div>
             <!-- Top Menu Items -->
             <ul class="nav navbar-right top-nav">
@@ -71,7 +72,7 @@
                                         <img class="media-object" src="http://placehold.it/50x50" alt="">
                                     </span>
                                     <div class="media-body">
-                                        <h5 class="media-heading"><strong>John Smith</strong>
+                                        <h5 class="media-heading"><strong>{{USERNAME}}</strong>
                                         </h5>
                                         <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
                                         <p>Lorem ipsum dolor sit amet, consectetur...</p>
@@ -86,7 +87,7 @@
                                         <img class="media-object" src="http://placehold.it/50x50" alt="">
                                     </span>
                                     <div class="media-body">
-                                        <h5 class="media-heading"><strong>John Smith</strong>
+                                        <h5 class="media-heading"><strong>{{USERNAME}}</strong>
                                         </h5>
                                         <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
                                         <p>Lorem ipsum dolor sit amet, consectetur...</p>
@@ -101,7 +102,7 @@
                                         <img class="media-object" src="http://placehold.it/50x50" alt="">
                                     </span>
                                     <div class="media-body">
-                                        <h5 class="media-heading"><strong>John Smith</strong>
+                                        <h5 class="media-heading"><strong>{{USERNAME}}</strong>
                                         </h5>
                                         <p class="small text-muted"><i class="fa fa-clock-o"></i> Yesterday at 4:32 PM</p>
                                         <p>Lorem ipsum dolor sit amet, consectetur...</p>
@@ -142,7 +143,7 @@
                     </ul>
                 </li>
                 <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> John Smith <b class="caret"></b></a>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> {{USERNAME}} <b class="caret"></b></a>
                     <ul class="dropdown-menu">
                         <li>
                             <a href="#"><i class="fa fa-fw fa-user"></i> Profile</a>
@@ -164,7 +165,7 @@
             <div class="collapse navbar-collapse navbar-ex1-collapse">
                 <ul class="nav navbar-nav side-nav">
                     <li class="active">
-                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i> Dashboard</a>
+                        <a href="index.html"><i class="fa fa-fw fa-dashboard"></i>Dasboard</a>
                     </li>
                     <li>
                         <a href="charts.html"><i class="fa fa-fw fa-bar-chart-o"></i> Charts</a>
@@ -214,7 +215,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <h1 class="page-header">
-                            Dashboard <small>Statistics Overview</small>
+                            {{COMPANYNAME}} <small>Statistics Overview</small>
                         </h1>
                         <ol class="breadcrumb">
                             <li class="active">
@@ -229,7 +230,7 @@
                     <div class="col-lg-12">
                         <div class="alert alert-info alert-dismissable">
                             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
-                            <i class="fa fa-info-circle"></i> <strong>Like SB Admin?</strong> Try out <a href="http://startbootstrap.com/template-overviews/sb-admin-2" class="alert-link">SB Admin 2</a> for additional features!
+                            <i class="fa fa-info-circle"></i> <strong>Like {{COMPANYNAME}}?</strong> Rate our application!
                         </div>
                     </div>
                 </div>
@@ -245,7 +246,7 @@
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">26</div>
-                                        <div>New Comments!</div>
+                                        <div>{{VIEW1}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -267,7 +268,7 @@
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">12</div>
-                                        <div>New Tasks!</div>
+                                        <div>{{VIEW2}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -289,7 +290,7 @@
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">124</div>
-                                        <div>New Orders!</div>
+                                        <div>{{VIEW3}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -311,7 +312,7 @@
                                     </div>
                                     <div class="col-xs-9 text-right">
                                         <div class="huge">13</div>
-                                        <div>Support Tickets!</div>
+                                        <div>{{VIEW4}}</div>
                                     </div>
                                 </div>
                             </div>
@@ -349,8 +350,50 @@
                     <div class="col-lg-12">
                         <div class="panel panel-default">
                             <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
+                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i>{{GRAPHTYPE}}</h3>
                             </div>
+                            <!-- CALENDAR --> 
+                            
+                            <div class="container">
+                                <div class='col-md-5'>
+                                    <div class="form-group">
+                                        <div class='input-group date' id='datetimepicker6'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class='col-md-5'>
+                                    <div class="form-group">
+                                        <div class='input-group date' id='datetimepicker7'>
+                                            <input type='text' class="form-control" />
+                                            <span class="input-group-addon">
+                                                <span class="glyphicon glyphicon-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <script type="text/javascript">
+                                $(function () {
+                                    $('#datetimepicker6').datetimepicker();
+                                    $('#datetimepicker7').datetimepicker({
+                                        useCurrent: false //Important! See issue #1075
+                                    });
+                                    $("#datetimepicker6").on("dp.change", function (e) {
+                                        $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
+                                    });
+                                    $("#datetimepicker7").on("dp.change", function (e) {
+                                        $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
+                                    });
+                                });
+                            </script>
+                            
+                            <!-- /CALENDAR -->
+                            
+                            
                             <div id="chart">
                                 <script src="core.js"></script>
                             </div>
@@ -367,7 +410,10 @@
                                             <input type="radio"> 2 Apartments
                                         </label>
                                     </div>
-                                    <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select>
+                                        <button type="button" class="btn btn-default col-md-2">
+                                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                                        </button>
+                                        <select class="form-control col-md-4" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select> 
                                     <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice2" ng-options="apartment for apartment in apartmentOptions" ng-show="numApartments == 2"></select>
                                 </div>
                                 <div class="col-md-6">
@@ -478,49 +524,49 @@
                                                 <td>3326</td>
                                                 <td>10/21/2013</td>
                                                 <td>3:29 PM</td>
-                                                <td>$321.33</td>
+                                                <td>$0.33</td>
                                             </tr>
                                             <tr>
                                                 <td>3325</td>
                                                 <td>10/21/2013</td>
                                                 <td>3:20 PM</td>
-                                                <td>$234.34</td>
+                                                <td>$0.34</td>
                                             </tr>
                                             <tr>
                                                 <td>3324</td>
                                                 <td>10/21/2013</td>
                                                 <td>3:03 PM</td>
-                                                <td>$724.17</td>
+                                                <td>$0.17</td>
                                             </tr>
                                             <tr>
                                                 <td>3323</td>
                                                 <td>10/21/2013</td>
                                                 <td>3:00 PM</td>
-                                                <td>$23.71</td>
+                                                <td>$0.71</td>
                                             </tr>
                                             <tr>
                                                 <td>3322</td>
                                                 <td>10/21/2013</td>
                                                 <td>2:49 PM</td>
-                                                <td>$8345.23</td>
+                                                <td>$0.23</td>
                                             </tr>
                                             <tr>
                                                 <td>3321</td>
                                                 <td>10/21/2013</td>
                                                 <td>2:23 PM</td>
-                                                <td>$245.12</td>
+                                                <td>$0.12</td>
                                             </tr>
                                             <tr>
                                                 <td>3320</td>
                                                 <td>10/21/2013</td>
                                                 <td>2:15 PM</td>
-                                                <td>$5663.54</td>
+                                                <td>$0.54</td>
                                             </tr>
                                             <tr>
                                                 <td>3319</td>
                                                 <td>10/21/2013</td>
                                                 <td>2:13 PM</td>
-                                                <td>$943.45</td>
+                                                <td>$0.45</td>
                                             </tr>
                                         </tbody>
                                     </table>
