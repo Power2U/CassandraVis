@@ -1,4 +1,4 @@
-var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services']);
+var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services','ui.bootstrap.datetimepicker']);
 var services = angular.module('cassandraVis.services', []);
 services.factory('dataService', ["$http", function($http) {
     function DataService() {
@@ -174,6 +174,13 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         $scope.apartmentChoice1 = $scope.apartmentOptions[0];
         $scope.apartmentChoice2 = $scope.apartmentOptions[0];
     });
+    
+    $scope.beforeRender = function ($view, $dates, $leftDate, $upDate, $rightDate) {
+    var index = Math.floor(Math.random() * $dates.length);
+    $dates[index].selectable = false;
+}
+    
+    
     $scope.showGraph = function() {
         console.log("WE ARE WORKING!");
         var config = {};

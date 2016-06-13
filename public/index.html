@@ -24,6 +24,8 @@
   <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
   <link rel="stylesheet" href="styles_c3.css">
+    
+<link rel="stylesheet" href="css/datetimepicker.css"/>
 
   <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
   <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -32,16 +34,18 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+    
+      <!-- jQuery -->
+  <script src="js/jquery.js"></script>
   <!-- SPELLS -->
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.2.16/angular.min.js"></script>
+  <script src="js/angular.min.js"></script>
   <!-- load angular -->
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <!-- load d3 -->
   <script src="http://cdnjs.cloudflare.com/ajax/libs/c3/0.4.10/c3.js"></script>
   <!-- load c3 -->
 
-  <!-- jQuery -->
-  <script src="js/jquery.js"></script>
+
 
   <!-- Bootstrap Core JavaScript -->
   <script src="js/bootstrap.min.js"></script>
@@ -51,8 +55,14 @@
   <!--<script src="js/plugins/morris/raphael.min.js"></script>
 <script src="js/plugins/morris/morris.min.js"></script>
 <script src="js/plugins/morris/morris-data.js"></script>-->
+<script type="text/javascript" src="js/moment.js"></script>
+<script type="text/javascript" src="js/datetimepicker.js"></script>
+<script type="text/javascript" src="js/datetimepicker.templates.js"></script>
+    
+<!--
   <script src="js/moment.js"></script>
   <script src="js/datetime.js"></script>
+-->
 
 
 </head>
@@ -249,7 +259,8 @@
         </div>
 
 
-        <h3 id="minimum-setup">Minimum Setup</h3>
+<!--        <h3 id="minimum-setup">Minimum Setup</h3>-->
+<!--
         <div class="container">
           <div class="row">
             <div class='col-sm-6'>
@@ -270,7 +281,8 @@
             </script>
           </div>
         </div>
-        <!-- /.row -->
+         /.row 
+-->
 
         <div class="row">
           <div class="col-lg-3 col-md-6">
@@ -388,8 +400,50 @@
               <div class="panel-heading">
                 <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i>{{GRAPHTYPE}}</h3>
               </div>
-              <!-- CALENDAR -->
 
+              <div id="chart">
+                <script src="core.js"></script>
+              </div>
+              <div class="row">
+
+
+                <!--                                    <select class="form-control" data-style="btn-primary" ng-model="numApartments" ng-options="num for num in numApartmentOptions"></select>-->
+                <div class="col-md-6">
+                  <div class="btn-group" data-toggle="buttons">
+                    <label class="btn btn-seconday active" ng-click="selectNumApartments(1)">
+                      <input type="radio" checked> 1 Apartment
+                    </label>
+                    <label class="btn btn-seconday" ng-click="selectNumApartments(2)">
+                      <input type="radio"> 2 Apartments
+                    </label>
+                  </div>
+                  <button type="button" class="btn btn-default col-md-2">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+                  </button>
+                        
+                  <select class="form-control col-md-4" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select>
+                  <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice2" ng-options="apartment for apartment in apartmentOptions" ng-show="numApartments == 2"></select>
+                </div>
+                  
+<!--
+                  <div class="dropdown">
+  <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="#">
+    <div class="input-group"><input type="text" class="form-control" data-ng-model="data.dateDropDownInput"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+    </div>
+  </a>
+  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+    <datetimepicker data-ng-model="data.dateDropDownInput" data-datetimepicker-config="{ dropdownSelector: '#dropdown2' }"/>
+  </ul>
+</div>
+-->
+                  
+                  <datetimepicker data-ng-model="data.date"></datetimepicker>
+<!--                  <datetimepicker data-ng-model="data.date" data-before-render="beforeRender($view, $dates, $leftDate, $upDate, $rightDate)"></datetimepicker>-->
+                  
+                         <!-- CALENDAR -->
+<!--
+
+                  <datetimepicker data-ng-model="data.date"></datetimepicker>
               <div class="container">
                 <div class='col-md-5'>
                   <div class="form-group">
@@ -412,35 +466,13 @@
                   </div>
                 </div>
               </div>
+-->
 
 
               <!-- /CALENDAR -->
-
-
-              <div id="chart">
-                <script src="core.js"></script>
-              </div>
-              <div class="row">
-
-
-                <!--                                    <select class="form-control" data-style="btn-primary" ng-model="numApartments" ng-options="num for num in numApartmentOptions"></select>-->
+                  
+                  
                 <div class="col-md-6">
-                  <div class="btn-group" data-toggle="buttons">
-                    <label class="btn btn-seconday active" ng-click="selectNumApartments(1)">
-                      <input type="radio" checked> 1 Apartment
-                    </label>
-                    <label class="btn btn-seconday" ng-click="selectNumApartments(2)">
-                      <input type="radio"> 2 Apartments
-                    </label>
-                  </div>
-                  <button type="button" class="btn btn-default col-md-2">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                  </button>
-                  <select class="form-control col-md-4" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select>
-                  <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice2" ng-options="apartment for apartment in apartmentOptions" ng-show="numApartments == 2"></select>
-                </div>
-                <div class="col-md-6">
-
 
                   <div class="btn-group" data-toggle="buttons">
                     <label class="btn btn-secondary" ng-click="selectViewMode('monthly')">
@@ -459,6 +491,7 @@
 
                   <!--                         <select class="form-control" data-style="btn-primary" ng-model="viewMode" ng-options="mode for mode in viewModeOptions"></select>  -->
                   <button class="btn btn-primary" ng-click="startLoading()">Show graph</button>
+                    
                 </div>
               </div>
               <!-- /.row-->
@@ -612,7 +645,7 @@
   </div>
   <!-- /#wrapper -->
 
-
+<!--
 
   <script type="text/javascript">
     $(function() {
@@ -627,7 +660,7 @@
         $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
       });
     });
-
+-->
   </script>
 
 </body>
