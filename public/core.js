@@ -381,7 +381,7 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     //                for (var dataIndex = 0; dataIndex < data.length; ++dataIndex) {
     //                    var hasMatch = false;
     //                    for (var index = 0; index < $scope.temperatureData.length; ++index) {
-    //                        if ($scope.temperatureData[index].hour === data[dataIndex].hour) {
+    //                        if ($scope.tempaeratureData[index].hour === data[dataIndex].hour) {
     //                            hasMatch = true;
     //                            break;
     //                        }
