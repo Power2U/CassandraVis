@@ -18,7 +18,8 @@ app.use(favicon(__dirname + '/public/img/favicon.ico')); //
 // configuration ===============================================================
 
 mongoose.connect(database.mongodb.url, function(err){
-	if (err) throw err;
+	//if (err) throw err;
+    console.log(err);
 }); 	// connect to mongoDB database on modulus.io
 
 app.use(express.static(__dirname + '/public')); 				// set the static files location /public/img will be /img for users

@@ -1,102 +1,113 @@
-var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services','ui.bootstrap.datetimepicker']);
+var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services', 'ui.bootstrap.datetimepicker', 'ui.dateTimeInput']);
 var services = angular.module('cassandraVis.services', []);
-services.factory('dataService', ["$http", function($http) {
+services.factory('dataService', ["$http", function ($http) {
     function DataService() {
         var data = [];
         var apartmentsIDs = [];
         var numDataPoints = 60;
         var maxNumber = 200;
-      
-        this.loadData = function(callback) {
+
+        this.loadData = function (callback) {
             if (data.length > numDataPoints) {
                 data.shift();
             }
-            data.push({"x":new Date(),"data1":randomNumber(),"data2":randomNumber()});
+            data.push({
+                "x": new Date(),
+                "data1": randomNumber(),
+                "data2": randomNumber()
+            });
             callback(data);
         };
-        
- 
+
+
         function randomNumber() {
             return Math.floor((Math.random() * maxNumber) + 1);
         }
-        
-        
+
+
         this.getDataCassandra = function (params, callback) {
             data = [];
             var inParams = params.split(',');
             var numApartments = inParams[0];
-   
-            
-            
-            //console.log(params);
-        
+
+
+
+            console.log(inParams);
+
             var outParams = inParams[1];
-            for(var i = 2; i < inParams.length; i++){
+            for (var i = 2; i < inParams.length; i++) {
                 outParams += "," + inParams[i];
             }
-            
-   
+
+
             //console.log("Number of apartments: " + numApartments);
-            switch(numApartments){
+            switch (numApartments) {
                 case "1":
-                    outParams = inParams[1] + ',' + inParams[2];
+                    outParams = inParams[1] + ',' + inParams[2] + ',' + inParams[3] + "," + inParams[4];
+                    console.log("Out parms: " + outParams);
                     //console.log("Out parameters " + outParams);
-                      $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
-                            for(var row = 0; row < cassandradata.rows.length; row++ ){
-//                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
-                                data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value});
-                            }
-                            callback(data);
-                        }).error(function(cassandradata) {
-                            console.log('Error: ' + data);
-                        });
+                    $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
+                        for (var row = 0; row < cassandradata.rows.length; row++) {
+                            //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
+                            data.push({
+                                "x": new Date(cassandradata.rows[row].ts),
+                                "data1": cassandradata.rows[row].value
+                            });
+                        }
+                        callback(data);
+                    }).error(function (cassandradata) {
+                        console.log('Error: ' + data);
+                    });
                     break;
                 case "2":
-//                    console.log("Working with 2 apartments");
-                    outParams = inParams[1] + ',' + inParams[3];
-//                     console.log("Out parameters " + outParams);
-                      $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
-                            for(var row = 0; row < cassandradata.rows.length; row++ ){
-//                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
-                                data.push({"x":new Date(cassandradata.rows[row].ts),"data1":cassandradata.rows[row].value});
+                    //                    console.log("Working with 2 apartments");
+                    outParams = inParams[1] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
+                    //                     console.log("Out parameters " + outParams);
+                    $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
+                        for (var row = 0; row < cassandradata.rows.length; row++) {
+                            //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
+                            data.push({
+                                "x": new Date(cassandradata.rows[row].ts),
+                                "data1": cassandradata.rows[row].value
+                            });
+                        }
+
+                        outParams = inParams[2] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
+                        $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
+                            for (var row = 0; row < cassandradata.rows.length; row++) {
+                                //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
+                                data[row]["data2"] = cassandradata.rows[row].value;
                             }
-                          
-                          outParams = inParams[2] + ',' + inParams[3];
-                            $http.get('/api/getcassandradata/' + outParams).success(function(cassandradata) {
-                                    for(var row = 0; row < cassandradata.rows.length; row++ ){
-        //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
-                                        data[row]["data2"] = cassandradata.rows[row].value;
-                                    }
-                                    callback(data);
-                                }).error(function(cassandradata) {
-                                    console.log('Error: ' + data);
-                                });
-                          
-                        }).error(function(cassandradata) {
+                            callback(data);
+                        }).error(function (cassandradata) {
                             console.log('Error: ' + data);
                         });
+
+                    }).error(function (cassandradata) {
+                        console.log('Error: ' + data);
+                    });
                     break;
                 default:
             }
-            
-          
-    }
-        
+
+
+        }
+
         this.getApartmentsIDs = function (callback) {
-            
-           // console.log("we are here. so its okay")
-         $http.get('/api/getapartmentsids').success(function(apartments) {
-                for(var row = 0; row < apartments.rows.length; row++ ){
-                    apartmentsIDs.push(apartments.rows[row].id);  
+
+            // console.log("we are here. so its okay")
+            $http.get('/api/getapartmentsids').success(function (apartments) {
+                for (var row = 0; row < apartments.rows.length; row++) {
+                    apartmentsIDs.push(apartments.rows[row].id);
                 }
-             callback(apartmentsIDs);
-         });
-       
+                callback(apartmentsIDs);
+            });
+
+        }
+
     }
-        
-    }
-    
- 
+
+
     return new DataService();
 }]);
 
@@ -105,43 +116,47 @@ function mainController($scope, $http) {
     $scope.formData = {};
     // when landing on the page, get all todos and show them
     $http.get('/api/todos')
-        .success(function(data) {
+        .success(function (data) {
             $scope.todos = data;
         })
-        .error(function(data) {
+        .error(function (data) {
             console.log('Error: ' + data);
         });
 
     // when submitting the add form, send the text to the node API
-    $scope.createTodo = function() {
+    $scope.createTodo = function () {
         $http.post('/api/todos', $scope.formData)
-            .success(function(data) {
+            .success(function (data) {
                 $scope.formData = {}; // clear the form so our user is ready to enter another
                 $scope.todos = data;
                 console.log(data);
             })
-            .error(function(data) {
+            .error(function (data) {
                 console.log('Error: ' + data);
             });
     };
 
     // delete a todo after checking it
-    $scope.deleteTodo = function(id) {
+    $scope.deleteTodo = function (id) {
         $http.delete('/api/todos/' + id)
-            .success(function(data) {
+            .success(function (data) {
                 $scope.todos = data;
             })
-            .error(function(data) {
+            .error(function (data) {
                 console.log('Error: ' + data);
             });
     };
 
 }
 
-cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http', '$timeout','dataService', function($scope, $interval, $http, $timeout, dataService) {
-    
+function ntos(n) {
+    return n > 9 ? "" + n : "0" + n;
+}
+
+cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http', '$timeout', 'dataService', function ($scope, $interval, $http, $timeout, dataService) {
+
     //String declarations
-    
+
     $scope.COMPANYNAME = "Power2U";
     $scope.USERNAME = "Rustam";
     $scope.VIEW1 = "Consumption";
@@ -149,233 +164,264 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.VIEW3 = "EV";
     $scope.VIEW4 = "Coins";
     $scope.GRAPHTYPE = $scope.VIEW1;
-    
-    
-    $scope.chart = null;
-    $scope.config={};
- 
 
-    $scope.config.data=[]
-    
-    $scope.numApartmentOptions = [1,2];
+
+    $scope.chart = null;
+    $scope.config = {};
+
+
+    $scope.config.data = []
+
+    $scope.numApartmentOptions = [1, 2];
     $scope.numApartments = 1; // default value
     $scope.viewModeOptions = ["monthly", "weekly", "daily"];
     $scope.viewMode = "monthly";
-    $scope.typeOptions=["line","bar","spline","step","area","area-step","area-spline"];
-                        
-    $scope.config.type1="area-spline";
-    $scope.config.type2="area-spline";
-    $scope.config.keys={"x":"x","value":["data1","data2"]};
- 
+    $scope.typeOptions = ["line", "bar", "spline", "step", "area", "area-step", "area-spline"];
+
+    $scope.config.type1 = "spline";
+    $scope.config.type2 = "spline";
+    $scope.config.keys = {
+        "x": "x",
+        "value": ["Apartment 1 ", "Apartment 2"]
+    };
+
     $scope.keepLoading = true;
-    
-    dataService.getApartmentsIDs(function(apartmentsIDs){
+
+
+    dataService.getApartmentsIDs(function (apartmentsIDs) {
         $scope.apartmentOptions = apartmentsIDs;
         $scope.apartmentChoice1 = $scope.apartmentOptions[0];
         $scope.apartmentChoice2 = $scope.apartmentOptions[0];
+
     });
-    
+
     $scope.beforeRender = function ($view, $dates, $leftDate, $upDate, $rightDate) {
-    var index = Math.floor(Math.random() * $dates.length);
-    $dates[index].selectable = false;
-}
-    
-    
-    $scope.showGraph = function() {
+        var index = Math.floor(Math.random() * $dates.length);
+        $dates[index].selectable = false;
+        //$scope.data.dateDropDownInputFrom = Date("December 30, 2014 11:13:00");
+        //$scope.data.dateDropDownInputTo = Date("December 30, 2015 11:13:00");
+    }
+
+
+    $scope.showGraph = function () {
         console.log("WE ARE WORKING!");
         var config = {};
         config.bindto = '#chart';
         config.data = {};
         config.data.keys = $scope.config.keys;
         config.data.json = $scope.config.data;
-        
+
         config.data.onmouseover = function (d) {
             chart.focus(d);
         }
         config.axis = {};
         config.axis.x = {
-            "type":"timeseries",
-            "tick":{
-                 format: '%Y-%m-%d'
+            "type": "timeseries",
+            "tick": {
+                format: '%Y-%m-%d'
             }
         };
-        
-           switch($scope.viewMode){
+
+        switch ($scope.viewMode) {
             case "monthly":
-                  config.axis.x = {
-            "type":"timeseries",
-            "tick":{
-                count : 12,
-                 format: '%Y-%m'
-            }
-        };
+                config.axis.x = {
+                    "type": "timeseries",
+                    "tick": {
+                        count: 12,
+                        format: '%Y-%m'
+                    }
+                };
                 break;
             case "daily":
-                   
-                  config.axis.x = {
-            "type":"timeseries",
-            "tick":{
-                culling: {
-                },
-                 format: '%Y-%m-%d'
-            }
-        };
+
+                config.axis.x = {
+                    "type": "timeseries",
+                    "tick": {
+                        culling: {},
+                        format: '%Y-%m-%d'
+                    }
+                };
                 break;
             default:
         }
-       
-        
-        config.axis.y = {"label":{"text":"KW/h","position":"outer-middle"}};
-        
-        config.data.types={"data1":$scope.config.type1,"data2":$scope.config.type2}; // Type of graph used for dataset
-        
+
+
+        config.axis.y = {
+            "label": {
+                "text": "KW/h",
+                "position": "outer-middle"
+            }
+        };
+
+        config.data.types = {
+            "data1": $scope.config.type1,
+            "data2": $scope.config.type2
+        }; // Type of graph used for dataset
+
         config.zoom = {
             enabled: "true", // Enable zoom
             rescale: "false" //Do not rescale Y axis while zooming.
         };
         config.subchart = {
-            show : "true"
+            show: "true"
         }
         config.color = {
-            pattern : ['#ff7f0e', '#1f77b4', '#2ca02c' ]
+            pattern: ['#ff7f0e', '#1f77b4', '#2ca02c']
         }
-        
-        $scope.chart = c3.generate(config);     
+
+        $scope.chart = c3.generate(config);
     }
-    
-    
-    $scope.startLoading = function() {
+
+
+    $scope.startLoading = function () {
         $scope.keepLoading = true;
+        $scope.dateFrom = $scope.data.dateDropDownInputFrom.getFullYear() + "-" + ntos($scope.data.dateDropDownInputFrom.getMonth()) + "-" + ntos($scope.data.dateDropDownInputFrom.getDate());
+        $scope.dateTo = $scope.data.dateDropDownInputTo.getFullYear() + "-" + ntos($scope.data.dateDropDownInputTo.getMonth()) + "-" + ntos($scope.data.dateDropDownInputTo.getDate());
         $scope.loadNewDataC();
     }
- 
-    $scope.stopLoading = function() {
+
+    $scope.stopLoading = function () {
         $scope.keepLoading = false;
+
     }
-    
+
     $scope.selectNumApartments = function (num) {
-        
+
         $scope.numApartments = num;
         console.log($scope.numApartments);
     }
     $scope.selectViewMode = function (mode) {
-        if (mode != "weekly"){
+        if (mode != "weekly") {
             $scope.viewMode = mode;
             $scope.loadNewDataC();
-        }
-        else {
+        } else {
             console.log("Weekly is not working yet");
         }
     }
-    
-     $scope.loadNewDataC = function() {
-         console.log("function is called");
-         console.log($scope.numApartments);
-         
-     
+
+    $scope.loadNewDataC = function () {
+        console.log("function is called");
+        console.log($scope.numApartments);
+
         $scope.showGraph();
-         switch($scope.numApartments){
-             case 1:
-                 var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.viewMode;
-                    dataService.getDataCassandra(params, function(newData) {
-                        var data = {};
-//                        console.log("Correct function")
-//                        console.log(newData);
-                        data.keys = $scope.config.keys;
-                        data.json = newData;
-                        data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
-                        data.names = {data1: $scope.apartmentChoice1};
-                        //data.types = {"data1":$scope.config.type1};
-                        $scope.chart.load(data);
-                    });
-                 break;
-             case 2:
-                 var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.apartmentChoice2 + "," + $scope.viewMode;
-                    dataService.getDataCassandra(params, function(newData) {
+        switch ($scope.numApartments) {
+            case 1:
+                var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.viewMode + "," + $scope.dateFrom + "," + $scope.dateTo;
+                dataService.getDataCassandra(params, function (newData) {
                     var data = {};
-//                    console.log("Correct function")
-//                    console.log(newData);
+                    //                        console.log("Correct function")
+                    //                        console.log(newData);
                     data.keys = $scope.config.keys;
                     data.json = newData;
-//                    data.types = {};
+                    data.types = {
+                        "data1": $scope.config.type1,
+                        "data2": $scope.config.type2
+                    };
+                    data.names = {
+                        data1: $scope.apartmentChoice1
+                    };
+                    //data.types = {"data1":$scope.config.type1};
+                    $scope.chart.load(data);
+                });
+                break;
+            case 2:
+                var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.apartmentChoice2 + "," + $scope.viewMode + "," + $scope.dateFrom + "," + $scope.dateTo;
+                dataService.getDataCassandra(params, function (newData) {
+                    var data = {};
+                    //                    console.log("Correct function")
+                    //                    console.log(newData);
+                    data.keys = $scope.config.keys;
+                    data.json = newData;
+                    //                    data.types = {};
                     //data.types[$scope.apartmentChoice1] = $scope.config.type1;
                     //data.types[$scope.apartmentChoice2] = $scope.config.type2;
-                    data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
-                    $scope.chart.load(data);                    
-                    });
-                 break;
-             default:
-                 console.log("Choose correct number of apartments");
-         }
-         $scope.stopLoading();
+                    data.types = {
+                        "data1": $scope.config.type1,
+                        "data2": $scope.config.type2
+                    };
+                    $scope.chart.load(data);
+                });
+                break;
+            default:
+                console.log("Choose correct number of apartments");
+        }
+        $scope.stopLoading();
     }
-    
-// 
-//    $scope.loadNewData = function() {
-//        dataService.loadData(function(newData) {
-//            var data = {};
-//            console.log(newData);
-//            data.keys = $scope.config.keys;
-//            data.json = newData;
-//            data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
-//            $scope.chart.load(data);
-//            $timeout(function(){
-//                if ($scope.keepLoading) {
-//                    $scope.loadNewData()                
-//                }
-//            },1000);            
-//        });
-//    }
-//         
-     
-     
-//    $scope.getData = function() {
-//
-//        $http.get('/api/temperatures')
-//            .success(function(data) {
-//                for (var dataIndex = 0; dataIndex < data.length; ++dataIndex) {
-//                    var hasMatch = false;
-//                    for (var index = 0; index < $scope.temperatureData.length; ++index) {
-//                        if ($scope.temperatureData[index].hour === data[dataIndex].hour) {
-//                            hasMatch = true;
-//                            break;
-//                        }
-//                    }
-//                    
-//                         if (!hasMatch) {
-//                            $scope.temperatureData.push({
-//                                hour: data[dataIndex].hour,
-//                                temperature: data[dataIndex].value
-//                            });
-//                              console.log("new data added! " + $scope.temperatureData[$scope.temperatureData.length-1].hour);
-//                        }
-//
-//                }
-//            
-//            console.log("Size of Temperature: " + $scope.temperatureData.length);
-//
-//            })
-//            .error(function(data) {
-//                console.log('Error: ' + data);
-//            });
-//
-//    }
+
+    $scope.selectTimeInterval = function () {
+        console.log("Date: " + $scope.data.dateDropDownInputFrom);
+        //var res = $scope.data.dateDropDownInputFrom.split(" ");
+
+        console.log("Date to: " + $scope.dateTo);
+    }
+
+    // 
+    //    $scope.loadNewData = function() {
+    //        dataService.loadData(function(newData) {
+    //            var data = {};
+    //            console.log(newData);
+    //            data.keys = $scope.config.keys;
+    //            data.json = newData;
+    //            data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
+    //            $scope.chart.load(data);
+    //            $timeout(function(){
+    //                if ($scope.keepLoading) {
+    //                    $scope.loadNewData()                
+    //                }
+    //            },1000);            
+    //        });
+    //    }
+    //         
+
+
+    //    $scope.getData = function() {
+    //
+    //        $http.get('/api/temperatures')
+    //            .success(function(data) {
+    //                for (var dataIndex = 0; dataIndex < data.length; ++dataIndex) {
+    //                    var hasMatch = false;
+    //                    for (var index = 0; index < $scope.temperatureData.length; ++index) {
+    //                        if ($scope.temperatureData[index].hour === data[dataIndex].hour) {
+    //                            hasMatch = true;
+    //                            break;
+    //                        }
+    //                    }
+    //                    
+    //                         if (!hasMatch) {
+    //                            $scope.temperatureData.push({
+    //                                hour: data[dataIndex].hour,
+    //                                temperature: data[dataIndex].value
+    //                            });
+    //                              console.log("new data added! " + $scope.temperatureData[$scope.temperatureData.length-1].hour);
+    //                        }
+    //
+    //                }
+    //            
+    //            console.log("Size of Temperature: " + $scope.temperatureData.length);
+    //
+    //            })
+    //            .error(function(data) {
+    //                console.log('Error: ' + data);
+    //            });
+    //
+    //    }
     // Function to replicate setInterval using $timeout service.
-    $scope.intervalFunction = function() {
-        $timeout(function() {
-           // $scope.getData();
+    $scope.intervalFunction = function () {
+        $timeout(function () {
+            // $scope.getData();
             $scope.intervalFunction();
         }, 3000);
     };
-    
+
     $scope.sleep = function (miliseconds) {
-       var currentTime = new Date().getTime();
-       while (currentTime + miliseconds >= new Date().getTime()) {
-       }
+        var currentTime = new Date().getTime();
+        while (currentTime + miliseconds >= new Date().getTime()) {}
     }
     $scope.intervalFunction();
-    
-    
+
+
+
+
     //drawChart($scope.temperatureData);
 }]);
 
@@ -386,25 +432,25 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
 
 
 //$interval(function() {
-    //       var hour = $scope.temperatureData.length + 1;
-    //        var temperature = Math.round(Math.random() * 100);
-    //       $scope.temperatureData.push({
-    //           hour: hour,
-    //            temperature: temperature
-    //        });
-    //      
-    //        /* ---------- This is approxmatealy how the data will be fetched from the server ---------
-    //	if (counter > 99) counter = 0;
-    //	$http.get('/api/temperatures')
-    //		.success(function(data) {
-    //			console.log(data[counter]);
-    //			$scope.temperatureData.push({hour:data[counter].hour, temperature:data[counter].value});
-    //		})
-    //		.error(function(data) {
-    //			console.log('Error: ' + data);
-    //		});
-    //	*/
-    //    }, 200, 10);
+//       var hour = $scope.temperatureData.length + 1;
+//        var temperature = Math.round(Math.random() * 100);
+//       $scope.temperatureData.push({
+//           hour: hour,
+//            temperature: temperature
+//        });
+//      
+//        /* ---------- This is approxmatealy how the data will be fetched from the server ---------
+//	if (counter > 99) counter = 0;
+//	$http.get('/api/temperatures')
+//		.success(function(data) {
+//			console.log(data[counter]);
+//			$scope.temperatureData.push({hour:data[counter].hour, temperature:data[counter].value});
+//		})
+//		.error(function(data) {
+//			console.log('Error: ' + data);
+//		});
+//	*/
+//    }, 200, 10);
 
 //    $interval(function() {
 //         $scope.drawChart();

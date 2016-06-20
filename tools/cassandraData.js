@@ -22,22 +22,26 @@ module.exports.getData = function(req, res, params) {
     var parameters = params.split(",");
     var apartmentID = "'" + parameters[0] + "'";
     var viewMode = parameters[1];
-    console.log("**** View Mode:" + viewMode);
+    var dateFrom = parameters[2];
+    var dateTo = parameters[3];
+    console.log("Parameters :" + parameters);
     console.log("SELECT * FROM " + viewMode + " WHERE");
                 //var dateStart = "'2015-" + ntos(curMonth) + "-01'";
                 //var dateEnd = "'2015-" + ntos(++curMonth) + "-01'";
-                client.execute("SELECT * FROM " + viewMode + " WHERE id=" + apartmentID , function(err, result) {
+    client.execute("SELECT * FROM " + viewMode + " WHERE id=" + apartmentID + " AND ts>='" + dateFrom + "' AND ts<='" + dateTo + "'", function(err, result) {
+//                client.execute("SELECT * FROM " + viewMode + " WHERE id=" + apartmentID + " AND ts='2015-06-01'", function(err, result) {
                     if (!err) {
                         if (result.rows.length > 0) {
                             console.log("Data accessed sucessfuly");
-                            //console.log(apartmentID);
+                            console.log(result.rows);
                             //console.log(" ***** Data IS: ****** \n" + result.rows[0].id);
                             res.json(result)
                         } else {
                             console.log("No results");
                         }
                     } else {
-                        throw (err)
+                        //throw (err)
+                        console.log("Could not retrieve data. Check database connection");
                     }
                 });
 }
@@ -85,7 +89,8 @@ module.exports.getApartmentsIDs = function(req, res) {
                 console.log("No Apartments results");
             }
         } else {
-            throw (err)
+            //throw (err);
+             console.log("Could not retrieve data. Check database connection");
         }
     });
 }
