@@ -2,51 +2,20 @@ var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services', 'ui.
 var services = angular.module('cassandraVis.services', []);
 services.factory('dataService', ["$http", function ($http) {
     function DataService() {
+        
+        // Data Initialisation
         var data = [];
         var apartmentsIDs = [];
         var numDataPoints = 60;
         var maxNumber = 200;
 
-        this.loadData = function (callback) {
-            if (data.length > numDataPoints) {
-                data.shift();
-            }
-            data.push({
-                "x": new Date(),
-                "data1": randomNumber(),
-                "data2": randomNumber()
-            });
-            callback(data);
-        };
-
-
+        //Random Number Generator
         function randomNumber() {
             return Math.floor((Math.random() * maxNumber) + 1);
         }
 
-
-        this.getDataCassandra = function (params, callback) {
-            data = [];
-            var inParams = params.split(',');
-            var numApartments = inParams[0];
-
-
-
-            console.log(inParams);
-
-            var outParams = inParams[1];
-            for (var i = 2; i < inParams.length; i++) {
-                outParams += "," + inParams[i];
-            }
-
-
-            //console.log("Number of apartments: " + numApartments);
-            switch (numApartments) {
-                case "1":
-                    outParams = inParams[1] + ',' + inParams[2] + ',' + inParams[3] + "," + inParams[4];
-                    console.log("Out parms: " + outParams);
-                    //console.log("Out parameters " + outParams);
-                    $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
+        function sendRequest(outParams, callback) {
+             $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
                         for (var row = 0; row < cassandradata.rows.length; row++) {
                             //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
                             data.push({
@@ -58,10 +27,26 @@ services.factory('dataService', ["$http", function ($http) {
                     }).error(function (cassandradata) {
                         console.log('Error: ' + data);
                     });
+        }
+
+        // Function used to fetch data from cassandra. Data is stored in data service so that it can be easilly access later from different controllers.
+        this.getDataCassandra = function (params, callback) {
+            data = [];
+            //split the request sting on ',' in order to know if we need to fetch one or two apartments.
+            var inParams = params.split(','); 
+            var numApartments = inParams[0];
+            
+                //console.log("Number of apartments: " + numApartments);
+            switch (numApartments) {
+                case "1":
+                    var outParams = inParams[1] + ',' + inParams[2] + ',' + inParams[3] + "," + inParams[4];
+                    //console.log("Out parameters " + outParams);
+                    sendRequest(outParams, callback);
+                   
                     break;
                 case "2":
                     //                    console.log("Working with 2 apartments");
-                    outParams = inParams[1] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
+                    var outParams = inParams[1] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
                     //                     console.log("Out parameters " + outParams);
                     $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
                         for (var row = 0; row < cassandradata.rows.length; row++) {
@@ -72,7 +57,7 @@ services.factory('dataService', ["$http", function ($http) {
                             });
                         }
 
-                        outParams = inParams[2] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
+                        var outParams = inParams[2] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
                         $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
                             for (var row = 0; row < cassandradata.rows.length; row++) {
                                 //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
@@ -113,49 +98,15 @@ services.factory('dataService', ["$http", function ($http) {
 
 
 function mainController($scope, $http) {
-    $scope.formData = {};
-    // when landing on the page, get all todos and show them
-    $http.get('/api/todos')
-        .success(function (data) {
-            $scope.todos = data;
-        })
-        .error(function (data) {
-            console.log('Error: ' + data);
-        });
-
-    // when submitting the add form, send the text to the node API
-    $scope.createTodo = function () {
-        $http.post('/api/todos', $scope.formData)
-            .success(function (data) {
-                $scope.formData = {}; // clear the form so our user is ready to enter another
-                $scope.todos = data;
-                console.log(data);
-            })
-            .error(function (data) {
-                console.log('Error: ' + data);
-            });
-    };
-
-    // delete a todo after checking it
-    $scope.deleteTodo = function (id) {
-        $http.delete('/api/todos/' + id)
-            .success(function (data) {
-                $scope.todos = data;
-            })
-            .error(function (data) {
-                console.log('Error: ' + data);
-            });
-    };
 
 }
-
 function ntos(n) {
     return n > 9 ? "" + n : "0" + n;
 }
 
-cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http', '$timeout', 'dataService', function ($scope, $interval, $http, $timeout, dataService) {
+cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$timeout', 'dataService', function ($scope, $interval, $http, $timeout, dataService) {
 
-    //String declarations
+    //String declarations used in all the html pages. Makes it easier to modify all the data at once
 
     $scope.COMPANYNAME = "Power2U";
     $scope.USERNAME = "Rustam";
@@ -165,80 +116,82 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     $scope.VIEW4 = "Coins";
     $scope.GRAPHTYPE = $scope.VIEW1;
 
+    
+    // Configuring C3 Chart defaults. For further infor -> C3 Manual
 
     $scope.chart = null;
     $scope.config = {};
 
-
     $scope.config.data = []
 
-    $scope.numApartmentOptions = [1, 2];
+    $scope.numApartmentOptions = [1, 2]; // Controls what Apartments choices we may have. Fixed on 2 in order to avoid occlusion of lines 
     $scope.numApartments = 1; // default value
-    $scope.viewModeOptions = ["monthly", "weekly", "daily"];
-    $scope.viewMode = "monthly";
-    $scope.typeOptions = ["line", "bar", "spline", "step", "area", "area-step", "area-spline"];
+    $scope.viewModeOptions = ["monthly", "weekly", "daily"]; // choice of the view modes for the graph. Currently implemented Monthly and Daily. Weekly database is not yet created. 
+    $scope.viewMode = "monthly"; // default value
+    $scope.typeOptions = ["line", "bar", "spline", "step", "area", "area-step", "area-spline"]; //Choice of graph view. Currently fixed on on 'spline' and the functioanality is hidden in order to not overwhelm users with configurations.
 
-    $scope.config.type1 = "spline";
-    $scope.config.type2 = "spline";
+    $scope.config.type1 = "spline"; //default value for data 1
+    $scope.config.type2 = "spline"; //default value for data 2
+    
     $scope.config.keys = {
         "x": "x",
-        "value": ["Apartment 1 ", "Apartment 2"]
+        "value": ["data1", "data2"]
     };
 
     $scope.keepLoading = true;
 
 
+    // Fetching apartments from database.  
     dataService.getApartmentsIDs(function (apartmentsIDs) {
         $scope.apartmentOptions = apartmentsIDs;
-        $scope.apartmentChoice1 = $scope.apartmentOptions[0];
-        $scope.apartmentChoice2 = $scope.apartmentOptions[0];
+        $scope.apartmentChoice1 = $scope.apartmentOptions[0]; // Default aparment to be displayed when apartments are fetched for view 1
+        $scope.apartmentChoice2 = $scope.apartmentOptions[1];// Default aparment to be displayed when apartments are fetched for view 2
 
     });
 
     $scope.beforeRender = function ($view, $dates, $leftDate, $upDate, $rightDate) {
         var index = Math.floor(Math.random() * $dates.length);
         $dates[index].selectable = false;
-        //$scope.data.dateDropDownInputFrom = Date("December 30, 2014 11:13:00");
-        //$scope.data.dateDropDownInputTo = Date("December 30, 2015 11:13:00");
+        $scope.data = {};
+        $scope.data.dateDropDownInputFrom = new Date("December 30, 2014 11:13:00");
+        $scope.data.dateDropDownInputTo = new Date("December 30, 2015 11:13:00");
     }
 
 
+    //Funciton to dislay graph using C3 library.
     $scope.showGraph = function () {
-        console.log("WE ARE WORKING!");
+        
         var config = {};
-        config.bindto = '#chart';
+        config.bindto = '#chart'; //defines to which DOM element to bind to
         config.data = {};
         config.data.keys = $scope.config.keys;
         config.data.json = $scope.config.data;
 
+        //Effect to focus on one of the data elements on the graph.
         config.data.onmouseover = function (d) {
             chart.focus(d);
         }
+        
+        // Configure the X axis based on view mode which is selected. In our case we use TimeSeries.
         config.axis = {};
-        config.axis.x = {
-            "type": "timeseries",
-            "tick": {
-                format: '%Y-%m-%d'
-            }
-        };
-
         switch ($scope.viewMode) {
+                
             case "monthly":
                 config.axis.x = {
                     "type": "timeseries",
                     "tick": {
-                        count: 12,
-                        format: '%Y-%m'
+                        count: 12, // maximum number of ticks is known - 12
+                        format: '%Y-%m' // YYYY-MM
                     }
                 };
                 break;
+                
             case "daily":
-
                 config.axis.x = {
                     "type": "timeseries",
                     "tick": {
                         culling: {},
-                        format: '%Y-%m-%d'
+                        format: '%Y-%m-%d' //YYYY-MM-DD
                     }
                 };
                 break;
@@ -246,13 +199,15 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         }
 
 
+        //Configure Y-axis 
         config.axis.y = {
             "label": {
                 "text": "KW/h",
                 "position": "outer-middle"
             }
         };
-
+        
+        // Disabled for the moment. Leaving here to if required could easitly be anabled from HTML
         config.data.types = {
             "data1": $scope.config.type1,
             "data2": $scope.config.type2
@@ -262,22 +217,31 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
             enabled: "true", // Enable zoom
             rescale: "false" //Do not rescale Y axis while zooming.
         };
+        
+        
         config.subchart = {
-            show: "true"
+            show: "false"
         }
         config.color = {
             pattern: ['#ff7f0e', '#1f77b4', '#2ca02c']
-        }
+        } // color patters for each data element in graph. Same order as in keys.values
 
+        // call to initiate C3 instance
         $scope.chart = c3.generate(config);
     }
 
 
     $scope.startLoading = function () {
-        $scope.keepLoading = true;
+        $scope.keepLoading = true; // will be used in the future for real time graph fetching.
+        
+        //Get The input from DateTimePicker - calendar
         $scope.dateFrom = $scope.data.dateDropDownInputFrom.getFullYear() + "-" + ntos($scope.data.dateDropDownInputFrom.getMonth()) + "-" + ntos($scope.data.dateDropDownInputFrom.getDate());
         $scope.dateTo = $scope.data.dateDropDownInputTo.getFullYear() + "-" + ntos($scope.data.dateDropDownInputTo.getMonth()) + "-" + ntos($scope.data.dateDropDownInputTo.getDate());
+        
+        // call to data loader
         $scope.loadNewDataC();
+        
+        
     }
 
     $scope.stopLoading = function () {
@@ -300,111 +264,48 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
     }
 
     $scope.loadNewDataC = function () {
-        console.log("function is called");
-        console.log($scope.numApartments);
-
-        $scope.showGraph();
+        
+        //TODO: Make sure you dont need this
+        //$scope.showGraph();
+        
+        // Chose what HTTP request will be sent to Node.js. Request is encoded into the url. It is laer parsed and split into parameters on ',' symbol. Number of Apartments to show + Aparatment IDs + View Mode (Monthly, weekly, daily...) + From Date + To Date
         switch ($scope.numApartments) {
             case 1:
-                var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.viewMode + "," + $scope.dateFrom + "," + $scope.dateTo;
-                dataService.getDataCassandra(params, function (newData) {
-                    var data = {};
-                    //                        console.log("Correct function")
-                    //                        console.log(newData);
-                    data.keys = $scope.config.keys;
-                    data.json = newData;
-                    data.types = {
-                        "data1": $scope.config.type1,
-                        "data2": $scope.config.type2
-                    };
-                    data.names = {
-                        data1: $scope.apartmentChoice1
-                    };
-                    //data.types = {"data1":$scope.config.type1};
-                    $scope.chart.load(data);
-                });
+                var params = $scope.numApartments + "," + $scope.apartmentChoice1 + ",";
                 break;
             case 2:
-                var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.apartmentChoice2 + "," + $scope.viewMode + "," + $scope.dateFrom + "," + $scope.dateTo;
-                dataService.getDataCassandra(params, function (newData) {
-                    var data = {};
-                    //                    console.log("Correct function")
-                    //                    console.log(newData);
-                    data.keys = $scope.config.keys;
-                    data.json = newData;
-                    //                    data.types = {};
-                    //data.types[$scope.apartmentChoice1] = $scope.config.type1;
-                    //data.types[$scope.apartmentChoice2] = $scope.config.type2;
-                    data.types = {
-                        "data1": $scope.config.type1,
-                        "data2": $scope.config.type2
-                    };
-                    $scope.chart.load(data);
-                });
+                var params = $scope.numApartments + "," + $scope.apartmentChoice1 + "," + $scope.apartmentChoice2 + ",";
                 break;
             default:
                 console.log("Choose correct number of apartments");
         }
+        
+        params += $scope.viewMode + "," + $scope.dateFrom + "," + $scope.dateTo;
+        
+        
+        dataService.getDataCassandra(params, function (newData) {
+            var data = {};
+            data.keys = $scope.config.keys;
+            data.json = newData;
+            //                    data.types = {};
+            //data.types[$scope.apartmentChoice1] = $scope.config.type1;
+            //data.types[$scope.apartmentChoice2] = $scope.config.type2;
+            data.types = {
+                "data1": $scope.config.type1,
+                "data2": $scope.config.type2
+            };
+            $scope.chart.load(data);
+        });
+        
         $scope.stopLoading();
     }
 
-    $scope.selectTimeInterval = function () {
-        console.log("Date: " + $scope.data.dateDropDownInputFrom);
-        //var res = $scope.data.dateDropDownInputFrom.split(" ");
+//    $scope.selectTimeInterval = function () {
+//        //console.log("Date: " + $scope.data.dateDropDownInputFrom);
+//        //var res = $scope.data.dateDropDownInputFrom.split(" ");
+//        console.log("Date to: " + $scope.dateTo);
+//    }
 
-        console.log("Date to: " + $scope.dateTo);
-    }
-
-    // 
-    //    $scope.loadNewData = function() {
-    //        dataService.loadData(function(newData) {
-    //            var data = {};
-    //            console.log(newData);
-    //            data.keys = $scope.config.keys;
-    //            data.json = newData;
-    //            data.types = {"data1":$scope.config.type1,"data2":$scope.config.type2};
-    //            $scope.chart.load(data);
-    //            $timeout(function(){
-    //                if ($scope.keepLoading) {
-    //                    $scope.loadNewData()                
-    //                }
-    //            },1000);            
-    //        });
-    //    }
-    //         
-
-
-    //    $scope.getData = function() {
-    //
-    //        $http.get('/api/temperatures')
-    //            .success(function(data) {
-    //                for (var dataIndex = 0; dataIndex < data.length; ++dataIndex) {
-    //                    var hasMatch = false;
-    //                    for (var index = 0; index < $scope.temperatureData.length; ++index) {
-    //                        if ($scope.tempaeratureData[index].hour === data[dataIndex].hour) {
-    //                            hasMatch = true;
-    //                            break;
-    //                        }
-    //                    }
-    //                    
-    //                         if (!hasMatch) {
-    //                            $scope.temperatureData.push({
-    //                                hour: data[dataIndex].hour,
-    //                                temperature: data[dataIndex].value
-    //                            });
-    //                              console.log("new data added! " + $scope.temperatureData[$scope.temperatureData.length-1].hour);
-    //                        }
-    //
-    //                }
-    //            
-    //            console.log("Size of Temperature: " + $scope.temperatureData.length);
-    //
-    //            })
-    //            .error(function(data) {
-    //                console.log('Error: ' + data);
-    //            });
-    //
-    //    }
     // Function to replicate setInterval using $timeout service.
     $scope.intervalFunction = function () {
         $timeout(function () {
@@ -417,6 +318,7 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
         var currentTime = new Date().getTime();
         while (currentTime + miliseconds >= new Date().getTime()) {}
     }
+    //used to pause the thread for 3 seconds. should be used when loading graph in real time.
     $scope.intervalFunction();
 
 
@@ -455,142 +357,3 @@ cassandraVis.controller('TemperatureController', ['$scope', '$interval', '$http'
 //    $interval(function() {
 //         $scope.drawChart();
 //    }, 3000, 10);
-
-
-
-//cassandraVis.directive('linearChart', function($parse, $window){
-//    
-//    
-//    // constants
-//  var margin = {},
-//    width  = $window.innerWidth,
-//    height = width * 0.7,
-//    color = d3.interpolateRgb("#f77", "#77f");
-//    
-//   return{
-//      restrict:'EA',
-//      //template:"<svg width='850' min-width='200' height='200'></svg>",
-//       link: function(scope, elem, attrs){
-//           
-//           // set up initial svg object
-//  
-//           console.log("Inner width: " + $window.innerWidth)
-//           updateDimensions($window.innerWidth, $window.innerHeight);
-//           
-//           var exp = $parse(attrs.chartData);
-//
-//           var temperatureDataToPlot=exp(scope);
-//           var padding = 20;
-//           var pathClass="path";
-//           var xScale, yScale, xAxisGen, yAxisGen, lineFun;
-//
-//           var d3 = $window.d3;
-//          
-//          // var svg = d3.select(rawSvg[0]);
-//
-//        var svg = d3.select(elem[0])
-//        .append("svg")
-//          .attr("width", width)
-//          .attr("height", height + margin + 100);
-//           
-//           console.log(elem[0]);
-//           
-//            var rawSvg=elem.find('svg');
-//           console.log(rawSvg.attr("width"));
-//           scope.$watchCollection(exp, function(newVal, oldVal){
-//               temperatureDataToPlot=newVal;
-//               redrawLineChart();
-//           });
-//
-//           function setChartParameters(){
-//
-//               svg
-//                  .attr('width', width + margin.right + margin.left)
-//                  .attr('height', height + margin.top + margin.bottom);
-//               xScale = d3.scale.linear()
-//                   .domain([temperatureDataToPlot[0].hour, temperatureDataToPlot[temperatureDataToPlot.length-1].hour])
-//                   .range([padding + 2, rawSvg.attr("width") - padding]);
-//
-//               yScale = d3.scale.linear()
-//                   .domain([0, d3.max(temperatureDataToPlot, function (d) {
-//                       return d.temperature;
-//                   })])
-//                   .range([height - padding, 0]);
-//
-//               xAxisGen = d3.svg.axis()
-//                   .scale(xScale)
-//                   .orient("bottom")
-//                 .ticks(temperatureDataToPlot.length - 1);
-//
-//               yAxisGen = d3.svg.axis()
-//                   .scale(yScale)
-//                   .orient("left")
-//                   .ticks(5);
-//
-//               lineFun = d3.svg.line()
-//                   .x(function (d) {
-//                       return xScale(d.hour);
-//                   })
-//                   .y(function (d) {
-//                       return yScale(d.temperature);
-//                   })
-//                   .interpolate("basis");
-//           }
-//         
-//         function drawLineChart() {
-//
-//               setChartParameters();
-//
-//               svg.append("svg:g")
-//                   .attr("class", "x axis")
-//                   .attr("transform", 'translate(0,'+ height + ')')
-//                   .call(xAxisGen);
-//
-//               svg.append("svg:g")
-//                   .attr("class", "y axis")
-//                   .attr("transform", "translate(20,0)")
-//                   .call(yAxisGen);
-//
-//               svg.append("svg:path")
-//                   .attr({
-//                       d: lineFun(temperatureDataToPlot),
-//                       "stroke": "blue",
-//                       "stroke-width": 2,
-//                       "fill": "none",
-//                       "class": pathClass
-//                   });
-//           }
-//
-//           function redrawLineChart() {
-//
-//               updateDimensions($window.innerWidth, $window.innerHeight);
-//               setChartParameters();
-//
-//               svg.selectAll("g.y.axis").call(yAxisGen);
-//
-//               svg.selectAll("g.x.axis").call(xAxisGen);
-//
-//               svg.selectAll("."+pathClass)
-//                   .attr({
-//                       d: lineFun(temperatureDataToPlot)
-//                   });
-//           }
-//           function updateDimensions(winWidth, winHeight) {
-//                margin.top = 20;
-//                margin.right = winWidth < breakPoint ? 0 : 50;
-//                margin.left = winWidth < breakPoint ? 0 : 50;
-//                margin.bottom = 50;
-//                margin.right = 50;
-//                margin.left =  50;
-//
-//                width = winWidth - margin.left - margin.right;
-//                height = .7 * width;
-//                console.log("WinWidth: "+ width);
-//                height = height >= winHeight ? winHeight * 0.8 : height
-//              }
-//
-//           drawLineChart();
-//           window.addEventListener('resize', redrawLineChart);
-//       }
-//   };
-//});

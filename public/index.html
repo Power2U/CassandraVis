@@ -20,12 +20,18 @@
     <!-- Morris Charts CSS -->
     <link href="css/plugins/morris.css" rel="stylesheet">
 
-    <!-- Custom Fonts -->
+    <!-- Custom Font -->
     <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 
+    <!-- C3 Styles. Controls how the graphs looks like. --> 
     <link rel="stylesheet" href="styles_c3.css">
 
+    
+    <!-- DateTimePicker CSS -->
     <link rel="stylesheet" href="css/datetimepicker.css" />
+    
+    
+    
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -51,26 +57,23 @@
     <script src="js/bootstrap.min.js"></script>
 
     <!-- Morris Charts JavaScript -->
-    <!--i disabled these-->
+    <!--I disabled these These charts are only used for template demo purpose -->
     <!--<script src="js/plugins/morris/raphael.min.js"></script>
 <script src="js/plugins/morris/morris.min.js"></script>
 <script src="js/plugins/morris/morris-data.js"></script>-->
+    
+    
+    <!-- Scripts required to support all the features of the DateTimePicker calendar -->
     <script type="text/javascript" src="js/moment.js"></script>
     <script type="text/javascript" src="js/datetimepicker.js"></script>
     <script type="text/javascript" src="js/datetimepicker.templates.js"></script>
     <script type="text/javascript" src="js/dateTimeInput.js"></script>
 
-    <!--
-  <script src="js/moment.js"></script>
-  <script src="js/datetime.js"></script>
--->
-
-
 </head>
 
 <body>
 
-    <div id="wrapper" ng-controller="TemperatureController" ng-init="showGraph()">
+    <div id="wrapper" ng-controller="MainController" ng-init="showGraph()">
 
         <!-- Navigation -->
         <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -260,30 +263,7 @@
                 </div>
 
 
-                <!--        <h3 id="minimum-setup">Minimum Setup</h3>-->
-                <!--
-        <div class="container">
-          <div class="row">
-            <div class='col-sm-6'>
-              <div class="form-group">
-                <div class='input-group date' id='datetimepicker1'>
-                  <input type='text' class="form-control" />
-                  <span class="input-group-addon">
-                        <span class="glyphicon glyphicon-calendar"></span>
-                  </span>
-                </div>
-              </div>
-            </div>
-            <script type="text/javascript">
-              $(function() {
-                $('#datetimepicker1').datetimepicker();
-              });
 
-            </script>
-          </div>
-        </div>
-         /.row 
--->
 
                 <div class="row">
                     <div class="col-lg-3 col-md-6">
@@ -376,25 +356,6 @@
                     </div>
                 </div>
                 <!-- /.row -->
-                <!--
-
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title"><i class="fa fa-bar-chart-o fa-fw"></i> Area Chart</h3>
-                            </div>
-                            <div class="panel-body">
-                                <div id="morris-area-chart"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
--->
-                <!-- /.row -->
-
-                <!-- /.row -->
-
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="panel panel-default">
@@ -408,7 +369,6 @@
                             <div class="row">
 
 
-                                <!--                                    <select class="form-control" data-style="btn-primary" ng-model="numApartments" ng-options="num for num in numApartmentOptions"></select>-->
                                 <div class="col-md-6">
                                     <!--Apartment Column-->
                                     <div class="btn-group" data-toggle="buttons">
@@ -419,34 +379,11 @@
                       <input type="radio"> 2 Apartments
                     </label>
                                     </div>
-                                    <!--
-                                    <button type="button" class="btn btn-default col-md-2">
-                    <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                  </button>
--->
+
 
                                     <select class="form-control col-md-4" data-style="btn-primary" ng-model="apartmentChoice1" ng-options="apartment for apartment in apartmentOptions"></select>
                                     <select class="form-control" data-style="btn-primary" ng-model="apartmentChoice2" ng-options="apartment for apartment in apartmentOptions" ng-show="numApartments == 2"></select>
                                 </div>
-
-
-                                <!--
-                  <div class="dropdown">
-  <a class="dropdown-toggle" id="dropdown2" role="button" data-toggle="dropdown" data-target="#" href="#">
-    <div class="input-group"><input type="text" class="form-control" data-ng-model="data.dateDropDownInput"><span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-    </div>
-  </a>
-  <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-    <datetimepicker data-ng-model="data.dateDropDownInput" data-datetimepicker-config="{ dropdownSelector: '#dropdown2' }"/>
-  </ul>
-</div>
--->
-
-                                <!--                  <datetimepicker data-ng-model="data.date"></datetimepicker>-->
-                                <!--                  <datetimepicker data-ng-model="data.date" data-before-render="beforeRender($view, $dates, $leftDate, $upDate, $rightDate)"></datetimepicker>-->
-
-
-
 
                                 <div class=" col-md-6">
                                     <div class="panel panel-default">
@@ -493,7 +430,7 @@
                                                             </div>
                                                         </a>
                                                         <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
-                                                            <datetimepicker data-ng-model="data.dateDropDownInputTo" data-datetimepicker-config="{ dropdownSelector: '#dropdown', minView:'day'}" data-before-render="beforeRender($view, $dates, $leftDate, $upDate, $rightDate)"/>
+                                                            <datetimepicker data-ng-model="data.dateDropDownInputTo" data-datetimepicker-config="{ dropdownSelector: '#dropdown', minView:'day'}"/>
                                                         </ul>
                                                     </div>
 
@@ -505,21 +442,12 @@
                                             </div>
 
                                             <div class="row">
-<!--
-                                                <div class="col-md-4">
-                                                    <select class="form-control" data-style="btn-primary" ng-model="config.type1" ng-options="type for type in typeOptions"></select>
-                                                    <select class="form-control" data-style="btn-primary" ng-model="config.type2" ng-options="type for type in typeOptions" ng-show="numApartments == 2"></select>
-                                                </div>
--->
+
 
                                             </div>
                                                 <button class="btn btn-primary" ng-click="startLoading()">Show graph</button>
                                          
-                                            <!--                         <select class="form-control" data-style="btn-primary" ng-model="viewMode" ng-options="mode for mode in viewModeOptions"></select>  -->
-
-
-
-                                        </div>
+                                      </div>
                                     </div>
 
                                 </div>
@@ -675,24 +603,7 @@
 
     </div>
     <!-- /#wrapper -->
-
-    <!--
-
-  <script type="text/javascript">
-    $(function() {
-      $('#datetimepicker6').datetimepicker();
-      $('#datetimepicker7').datetimepicker({
-        useCurrent: false //Important! See issue #1075
-      });
-      $("#datetimepicker6").on("dp.change", function(e) {
-        $('#datetimepicker7').data("DateTimePicker").minDate(e.date);
-      });
-      $("#datetimepicker7").on("dp.change", function(e) {
-        $('#datetimepicker6').data("DateTimePicker").maxDate(e.date);
-      });
-    });
--->
-    </script>
+</script>
 
 </body>
 
