@@ -36,21 +36,23 @@ services.factory('dataService', ["$http", function ($http) {
             var inParams = params.split(','); 
             var numApartments = inParams[0];
             
-                //console.log("Number of apartments: " + numApartments);
+            // Baed on the number of apartments chosen to show we act differently.
+            // In case there is only one apartment chosen, just send request to node once. 
             switch (numApartments) {
                 case "1":
                     var outParams = inParams[1] + ',' + inParams[2] + ',' + inParams[3] + "," + inParams[4];
-                    //console.log("Out parameters " + outParams);
                     sendRequest(outParams, callback);
                    
                     break;
                 case "2":
-                    //                    console.log("Working with 2 apartments");
+                    // In case if 2 apartments are chosen, we have to first fetch the data, create dataset. On completion second request need to be sent and the data returned should be appended to the previosly created dataset. PS this a very bad (in terms of code beauty and scalability) way of doing this. However, this was my "quick fix" since the javascript performs function calls asynchroniously. Apparently, external library is requited to control the flow of the program.
+                    // TODO: Fix this part of code to be more easily etendable for greater number of apartmets.
                     var outParams = inParams[1] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
                     //                     console.log("Out parameters " + outParams);
                     $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
+                        
+                        // from the elemetns received from the server, create a dataset which is usable by chart system.
                         for (var row = 0; row < cassandradata.rows.length; row++) {
-                            //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
                             data.push({
                                 "x": new Date(cassandradata.rows[row].ts),
                                 "data1": cassandradata.rows[row].value
@@ -58,9 +60,10 @@ services.factory('dataService', ["$http", function ($http) {
                         }
 
                         var outParams = inParams[2] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
+                        // Make another http request to get get second apartments' data. And then push it into the existing dataset.
                         $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
+                            //
                             for (var row = 0; row < cassandradata.rows.length; row++) {
-                                //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
                                 data[row]["data2"] = cassandradata.rows[row].value;
                             }
                             callback(data);
@@ -74,13 +77,10 @@ services.factory('dataService', ["$http", function ($http) {
                     break;
                 default:
             }
-
-
         }
 
+        // Gets IDs of apartments available in database and puts them into the container. 
         this.getApartmentsIDs = function (callback) {
-
-            // console.log("we are here. so its okay")
             $http.get('/api/getapartmentsids').success(function (apartments) {
                 for (var row = 0; row < apartments.rows.length; row++) {
                     apartmentsIDs.push(apartments.rows[row].id);
