@@ -2,7 +2,7 @@ var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services', 'ui.
 var services = angular.module('cassandraVis.services', []);
 services.factory('dataService', ["$http", function ($http) {
     function DataService() {
-        
+
         // Data Initialisation
         var data = [];
         var apartmentsIDs = [];
@@ -14,35 +14,37 @@ services.factory('dataService', ["$http", function ($http) {
             return Math.floor((Math.random() * maxNumber) + 1);
         }
 
+
+        //TODO:RUSTAM write 
         function sendRequest(outParams, callback) {
-             $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
-                        for (var row = 0; row < cassandradata.rows.length; row++) {
-                            //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
-                            data.push({
-                                "x": new Date(cassandradata.rows[row].ts),
-                                "data1": cassandradata.rows[row].value
-                            });
-                        }
-                        callback(data);
-                    }).error(function (cassandradata) {
-                        console.log('Error: ' + data);
+            $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
+                for (var row = 0; row < cassandradata.rows.length; row++) {
+                    //                                console.log("pushing new data: " + cassandradata.rows[row].ts + " " + cassandradata.rows[row].value);
+                    data.push({
+                        "x": new Date(cassandradata.rows[row].ts),
+                        "data1": cassandradata.rows[row].value
                     });
+                }
+                callback(data);
+            }).error(function (cassandradata) {
+                console.log('Error: ' + data);
+            });
         }
 
         // Function used to fetch data from cassandra. Data is stored in data service so that it can be easilly access later from different controllers.
         this.getDataCassandra = function (params, callback) {
             data = [];
             //split the request sting on ',' in order to know if we need to fetch one or two apartments.
-            var inParams = params.split(','); 
+            var inParams = params.split(',');
             var numApartments = inParams[0];
-            
+
             // Baed on the number of apartments chosen to show we act differently.
             // In case there is only one apartment chosen, just send request to node once. 
             switch (numApartments) {
                 case "1":
                     var outParams = inParams[1] + ',' + inParams[2] + ',' + inParams[3] + "," + inParams[4];
                     sendRequest(outParams, callback);
-                   
+
                     break;
                 case "2":
                     // In case if 2 apartments are chosen, we have to first fetch the data, create dataset. On completion second request need to be sent and the data returned should be appended to the previosly created dataset. PS this a very bad (in terms of code beauty and scalability) way of doing this. However, this was my "quick fix" since the javascript performs function calls asynchroniously. Apparently, external library is requited to control the flow of the program.
@@ -50,7 +52,7 @@ services.factory('dataService', ["$http", function ($http) {
                     var outParams = inParams[1] + ',' + inParams[3] + ',' + inParams[4] + "," + inParams[5];
                     //                     console.log("Out parameters " + outParams);
                     $http.get('/api/getcassandradata/' + outParams).success(function (cassandradata) {
-                        
+
                         // from the elemetns received from the server, create a dataset which is usable by chart system.
                         for (var row = 0; row < cassandradata.rows.length; row++) {
                             data.push({
@@ -100,6 +102,7 @@ services.factory('dataService', ["$http", function ($http) {
 function mainController($scope, $http) {
 
 }
+
 function ntos(n) {
     return n > 9 ? "" + n : "0" + n;
 }
@@ -116,8 +119,15 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
     $scope.VIEW4 = "Coins";
     $scope.GRAPHTYPE = $scope.VIEW1;
 
-    
+
+
+    //Set the default (initial) dates for the calendar
+    $scope.data = {};
+    $scope.data.dateDropDownInputFrom = new Date("December 30, 2014 11:13:00");
+    $scope.data.dateDropDownInputTo = new Date("December 30, 2015 11:13:00");
     // Configuring C3 Chart defaults. For further infor -> C3 Manual
+
+
 
     $scope.chart = null;
     $scope.config = {};
@@ -132,7 +142,7 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
 
     $scope.config.type1 = "spline"; //default value for data 1
     $scope.config.type2 = "spline"; //default value for data 2
-    
+
     $scope.config.keys = {
         "x": "x",
         "value": ["data1", "data2"]
@@ -145,10 +155,10 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
     dataService.getApartmentsIDs(function (apartmentsIDs) {
         $scope.apartmentOptions = apartmentsIDs;
         $scope.apartmentChoice1 = $scope.apartmentOptions[0]; // Default aparment to be displayed when apartments are fetched for view 1
-        $scope.apartmentChoice2 = $scope.apartmentOptions[1];// Default aparment to be displayed when apartments are fetched for view 2
-
+        $scope.apartmentChoice2 = $scope.apartmentOptions[1]; // Default aparment to be displayed when apartments are fetched for view 2
     });
 
+    //Calendar function. Required to set default value. Before CALENDAR Render
     $scope.beforeRender = function ($view, $dates, $leftDate, $upDate, $rightDate) {
         var index = Math.floor(Math.random() * $dates.length);
         $dates[index].selectable = false;
@@ -160,7 +170,7 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
 
     //Funciton to dislay graph using C3 library.
     $scope.showGraph = function () {
-        
+
         var config = {};
         config.bindto = '#chart'; //defines to which DOM element to bind to
         config.data = {};
@@ -171,11 +181,11 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
         config.data.onmouseover = function (d) {
             chart.focus(d);
         }
-        
+
         // Configure the X axis based on view mode which is selected. In our case we use TimeSeries.
         config.axis = {};
         switch ($scope.viewMode) {
-                
+
             case "monthly":
                 config.axis.x = {
                     "type": "timeseries",
@@ -185,7 +195,7 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
                     }
                 };
                 break;
-                
+
             case "daily":
                 config.axis.x = {
                     "type": "timeseries",
@@ -206,7 +216,7 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
                 "position": "outer-middle"
             }
         };
-        
+
         // Disabled for the moment. Leaving here to if required could easitly be anabled from HTML
         config.data.types = {
             "data1": $scope.config.type1,
@@ -217,14 +227,14 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
             enabled: "true", // Enable zoom
             rescale: "false" //Do not rescale Y axis while zooming.
         };
-        
-        
+
+
         config.subchart = {
             show: "false"
         }
         config.color = {
-            pattern: ['#ff7f0e', '#1f77b4', '#2ca02c']
-        } // color patters for each data element in graph. Same order as in keys.values
+                pattern: ['#ff7f0e', '#1f77b4', '#2ca02c']
+            } // color patters for each data element in graph. Same order as in keys.values
 
         // call to initiate C3 instance
         $scope.chart = c3.generate(config);
@@ -233,15 +243,15 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
 
     $scope.startLoading = function () {
         $scope.keepLoading = true; // will be used in the future for real time graph fetching.
-        
+
         //Get The input from DateTimePicker - calendar
         $scope.dateFrom = $scope.data.dateDropDownInputFrom.getFullYear() + "-" + ntos($scope.data.dateDropDownInputFrom.getMonth()) + "-" + ntos($scope.data.dateDropDownInputFrom.getDate());
         $scope.dateTo = $scope.data.dateDropDownInputTo.getFullYear() + "-" + ntos($scope.data.dateDropDownInputTo.getMonth()) + "-" + ntos($scope.data.dateDropDownInputTo.getDate());
-        
+
         // call to data loader
         $scope.loadNewDataC();
-        
-        
+
+
     }
 
     $scope.stopLoading = function () {
@@ -264,10 +274,10 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
     }
 
     $scope.loadNewDataC = function () {
-        
+
         //TODO: Make sure you dont need this
         //$scope.showGraph();
-        
+
         // Chose what HTTP request will be sent to Node.js. Request is encoded into the url. It is laer parsed and split into parameters on ',' symbol. Number of Apartments to show + Aparatment IDs + View Mode (Monthly, weekly, daily...) + From Date + To Date
         switch ($scope.numApartments) {
             case 1:
@@ -279,10 +289,10 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
             default:
                 console.log("Choose correct number of apartments");
         }
-        
+
         params += $scope.viewMode + "," + $scope.dateFrom + "," + $scope.dateTo;
-        
-        
+
+
         dataService.getDataCassandra(params, function (newData) {
             var data = {};
             data.keys = $scope.config.keys;
@@ -296,15 +306,15 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
             };
             $scope.chart.load(data);
         });
-        
+
         $scope.stopLoading();
     }
 
-//    $scope.selectTimeInterval = function () {
-//        //console.log("Date: " + $scope.data.dateDropDownInputFrom);
-//        //var res = $scope.data.dateDropDownInputFrom.split(" ");
-//        console.log("Date to: " + $scope.dateTo);
-//    }
+    //    $scope.selectTimeInterval = function () {
+    //        //console.log("Date: " + $scope.data.dateDropDownInputFrom);
+    //        //var res = $scope.data.dateDropDownInputFrom.split(" ");
+    //        console.log("Date to: " + $scope.dateTo);
+    //    }
 
     // Function to replicate setInterval using $timeout service.
     $scope.intervalFunction = function () {
@@ -315,10 +325,10 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
     };
 
     $scope.sleep = function (miliseconds) {
-        var currentTime = new Date().getTime();
-        while (currentTime + miliseconds >= new Date().getTime()) {}
-    }
-    //used to pause the thread for 3 seconds. should be used when loading graph in real time.
+            var currentTime = new Date().getTime();
+            while (currentTime + miliseconds >= new Date().getTime()) {}
+        }
+        //used to pause the thread for 3 seconds. should be used when loading graph in real time.
     $scope.intervalFunction();
 
 
