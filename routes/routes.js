@@ -1,8 +1,11 @@
-var cassandraData = require('../tools/cassandraData');
+//var cassandraData = require('../tools/cassandraData');
+var auth = require('./auth.js');
 
 module.exports = function (app) {
 
     //TODO: these are test purpose methods. Deal with them later
+    // routes
+    app.use('/api/user/', auth);
 
     app.get('/api/temperatures', function (req, res) {
 

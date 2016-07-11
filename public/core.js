@@ -1,4 +1,4 @@
-var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services', 'ui.bootstrap.datetimepicker', 'ui.dateTimeInput']);
+var cassandraVis = angular.module('cassandraVis', ['cassandraVis.services', 'ui.bootstrap.datetimepicker', 'ui.dateTimeInput', 'ngRoute']);
 var services = angular.module('cassandraVis.services', []);
 services.factory('dataService', ["$http", function ($http) {
     function DataService() {
@@ -106,6 +106,34 @@ function mainController($scope, $http) {
 function ntos(n) {
     return n > 9 ? "" + n : "0" + n;
 }
+
+cassandraVis.config(function ($routeProvider) {
+    $routeProvider
+        .when('/', {
+            templateUrl: 'partials/home.html'
+        })
+        .when('/login', {
+            templateUrl: 'partials/login.html',
+            controller: 'loginController'
+        })
+        .when('/logout', {
+            controller: 'logoutController'
+        })
+        .when('/register', {
+            templateUrl: 'partials/register.html',
+            controller: 'registerController'
+        })
+        .when('/one', {
+            template: '<h1>This is page one!</h1>'
+        })
+        .when('/two', {
+            template: '<h1>This is page two!</h1>'
+        })
+        .otherwise({
+            redirectTo: '/'
+        });
+});
+
 
 cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$timeout', 'dataService', function ($scope, $interval, $http, $timeout, dataService) {
 

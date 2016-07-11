@@ -1,16 +1,44 @@
 // set up ======================================================================
 var express = require('express');
 var app = express(); // create our app w/ express
-//var mongoose = require('mongoose'); 					// mongoose for mongodb
+var mongoose = require('mongoose'); // mongoose for mongodb
 var port = process.env.PORT || 8080; // set the port
+
+
 var database = require('./config/database'); // load the database config
 
 var morgan = require('morgan'); // log requests to the console (express4)
 var bodyParser = require('body-parser'); // pull information from HTML POST (express4)
 var methodOverride = require('method-override'); // simulate DELETE and PUT (express4)
 
+// ============================ TEST =================================
+var hash = require('bcrypt-nodejs');
+var path = require('path');
+var passport = require('passport');
+var localStrategy = require('passport-local').Strategy;
 
+var User = require("./models/users.js");
 
+app.use(require('express-session')({
+    secret: 'keyboard cat',
+    resave: false,
+    saveUninitialized: false
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(express.static(path.join(__dirname, 'public')));
+
+// configure passport
+passport.use(new localStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
+
+// configuration ===============================================================
+mongoose.connect(database.mongodb.url, function (err) {
+    if (err) throw err;
+}); // connect to mongoDB database on modulus.io
+
+//============================================================
 // 2 lines to get favicon running
 var favicon = require('serve-favicon');
 app.use(favicon(__dirname + '/public/img/favicon.ico')); //
@@ -30,6 +58,7 @@ app.use(methodOverride());
 
 // routes ======================================================================
 require('./routes/routes.js')(app);
+
 
 // listen (start app with node server.js) ======================================
 app.listen(port);
