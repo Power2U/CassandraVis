@@ -245,8 +245,11 @@ cassandraVis.controller('MainController', ['$scope', '$interval', '$http', '$tim
         $scope.keepLoading = true; // will be used in the future for real time graph fetching.
 
         //Get The input from DateTimePicker - calendar
-        $scope.dateFrom = $scope.data.dateDropDownInputFrom.getFullYear() + "-" + ntos($scope.data.dateDropDownInputFrom.getMonth()) + "-" + ntos($scope.data.dateDropDownInputFrom.getDate());
-        $scope.dateTo = $scope.data.dateDropDownInputTo.getFullYear() + "-" + ntos($scope.data.dateDropDownInputTo.getMonth()) + "-" + ntos($scope.data.dateDropDownInputTo.getDate());
+        $scope.dateFrom = $scope.data.dateDropDownInputFrom.getFullYear() + "-" + ntos($scope.data.dateDropDownInputFrom.getMonth() + 1) + "-" + ntos($scope.data.dateDropDownInputFrom.getDate());
+        //console.log("raw date: " + $scope.data.dateDropDownInputFrom.getFullYear() + " / " + $scope.data.dateDropDownInputFrom.getMonth() + 1 + " / " + $scope.data.dateDropDownInputFrom.getDate());
+        //console.log($scope.dateFrom);
+        $scope.dateTo = $scope.data.dateDropDownInputTo.getFullYear() + "-" + ntos($scope.data.dateDropDownInputTo.getMonth() + 1) + "-" + ntos($scope.data.dateDropDownInputTo.getDate());
+        console.log($scope.dateTo);
 
         // call to data loader
         $scope.loadNewDataC();
